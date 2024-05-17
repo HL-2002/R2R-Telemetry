@@ -2,9 +2,9 @@ import random
 import time
 
 """ 
-The generator function yields a dictionary of random values within the minimum and maximum 
-values given as arguments, effectively generating a random sequence of values within the 
-given range.
+The generator function yields both a dictionary of random values within the minimum and maximum 
+values given as arguments and the time to generate them, effectively generating a random sequence 
+of values within the given range.
 
 The dictionary is generated accordingly to the input channels, which contain the name of the
 channel, and the minimum and maximum values that the channel can take.
@@ -28,13 +28,15 @@ Channel dictionary example:
 """
 
 def generate(channels:dict, hz:int):
-    """ Function to get the random values for the channels given as input, with 1/hz delay.
+    """ 
+    Function to get both the random values for the channels given as input 
+    and time to generate it, with 1/hz delay.
     """
     time.sleep(1/hz)
     data = {}
     for key in channels:
         data[key] = random.randint(channels[key]["min"], channels[key]["max"])
-    return data
+    return data, 1/hz
 
 
 # Test the function with some channels
