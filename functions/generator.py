@@ -27,33 +27,34 @@ Channel dictionary example:
 }
 """
 
-def generate(channels:dict, hz:int):
-    """ 
-    Function to get both the random values for the channels given as input 
+
+def generate(channels: dict, hz: int):
+    """
+    Function to get both the random values for the channels given as input
     and time to generate it, with 1/hz delay.
     """
-    time.sleep(1/hz)
+    time.sleep(1 / hz)
     data = {}
     for key in channels:
         data[key] = random.randint(channels[key]["min"], channels[key]["max"])
-    return data, 1/hz
+    return data, 1 / hz
 
 
 # Test the function with some channels
 if __name__ == "__main__":
     channels = {
-        "speed":{
+        "speed": {
             "min": 0,
             "max": 300,
         },
-        "rpms":{
+        "rpms": {
             "min": 0,
             "max": 8000,
         },
-        "temperature":{
+        "temperature": {
             "min": 0,
             "max": 100,
-        }
+        },
     }
 
     while True:
