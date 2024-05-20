@@ -28,16 +28,22 @@ Channel dictionary example:
 """
 
 
-def generate(channels: dict, hz: int):
+def generate(channels: dict, hz: int) -> dict:
     """
     Function to get both the random values for the channels given as input
     and time to generate it, with 1/hz delay.
+
+    Return:
+    - data dict, with an entry for every channel given.
+    - time to generate the data.
     """
     time.sleep(1 / hz)
     data = {}
+
     for key in channels:
         data[key] = random.randint(channels[key]["min"], channels[key]["max"])
-    return data, 1 / hz
+
+    return data
 
 
 # Test the function with some channels
