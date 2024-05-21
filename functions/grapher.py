@@ -86,9 +86,14 @@ def update(frame: int, xs: list, ys: dict, ax: plt.axes, channels: dict, hz: int
     for channel in ys:
         ys[channel].append(y[channel])
 
+    # Limit data for performance
+    ys = {channel: ys[channel][-100:] for channel in ys}
+    xs = xs[-100:]
+
     # Plot data
     # TODO: Need to adapt for when there's only one channel
     for i, channel in enumerate(channels):
+        ax[i].clear()
         ax[i].plot(xs, ys[channel], "r")
 
 
