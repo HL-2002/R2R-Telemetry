@@ -1,0 +1,27 @@
+{
+  "name": "r2r-telemetry",
+  "version": "1.0.0",
+  "description": "Telemetry logger software for Road2theRace Formula SAE team",
+  "main": "main.js",
+  "scripts": {
+    "test": "test .",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HL-2002/R2R-Telemetry.git"
+  },
+  "keywords": [
+    "telemetry",
+    "logger"
+  ],
+  "author": "Henry Lang, Luis Hernandez, Mario Alvarado, Victor Marcano",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/HL-2002/R2R-Telemetry/issues"
+  },
+  "homepage": "https://github.com/HL-2002/R2R-Telemetry#readme",
+  "devDependencies": {
+    "electron": "^30.0.8"
+  }
+}
