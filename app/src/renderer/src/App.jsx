@@ -1,6 +1,11 @@
+<<<<<<< Updated upstream
 import Button from './components/Button'
 
+=======
+import chart  from "chart.js/auto"
+>>>>>>> Stashed changes
 function App() {
+  console.log(chart)
   return (
     <>
       <Button
