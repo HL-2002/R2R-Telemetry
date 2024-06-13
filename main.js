@@ -24,10 +24,14 @@ async function sendTest() {
     return read()
 }
 
-// Disable navigation to external URLs
+// Disable navigation to external URLs and new windows
 app.on('web-contents-created', (event, contents) =>{
     contents.on('will-navigate', (event, navigationUrl) => {
         event.preventDefault()
+    })
+
+    contents.setWindowOpenHandler(({url}) => {
+        return {action: 'deny'}
     })
 })
 
