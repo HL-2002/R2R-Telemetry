@@ -18,8 +18,16 @@ function createWindow () {
   window.loadFile('front/index.html')
 }
 
+// Function to test messaging between main and renderer processes
+async function sendTest() {
+    return read()
+}
+
 // Create new window when the app is ready
 app.whenReady().then(() => {
+    // Test two-way messaging between main and renderer processes
+    ipcMain.handle('test', sendTest)
+    // Create window
     createWindow()
 
     // Open window when none are active on MacOs
@@ -42,6 +50,3 @@ app.on('window-all-closed', () => {
         app.quit()
     }
 })
-
-// Test messaging between main and renderer processes
-// Main to Renderer
