@@ -4,6 +4,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron') 
 const path = require('node:path')
 const read = require('./functions/reader.js')
+const {URL} = require('url')
 
 // Function to create a new window
 function createWindow () {
@@ -23,6 +24,13 @@ async function sendTest() {
     return read()
 }
 
+// Disable navigation to external URLs
+app.on('web-contents-created', (event, contents) =>{
+    contents.on('will-navigate', (event, navigationUrl) => {
+        event.preventDefault()
+    })
+})
+
 // Create new window when the app is ready
 app.whenReady().then(() => {
     // Test two-way messaging between main and renderer processes
@@ -36,9 +44,6 @@ app.whenReady().then(() => {
             createWindow()
         }
     })
-
-    // Test log
-    console.log("Hello from main.js")
 
     // Test read API
     console.log(read())
