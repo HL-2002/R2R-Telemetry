@@ -1,0 +1,16 @@
+{
+    "files.exclude": {
+        "**/.editorconfig": true,
+        "**/.eslintignore": true,
+        "**/.eslintrc.cjs": true,
+        "**/.npmrc": true,
+        "**/.prettierignore": true,
+        "**/.prettierrc.yaml": true,
+        "**/dev-app-update.yml": true,
+        "**/electron-builder.yml": true,
+        "**/electron.vite.config.mjs": true,
+        "**/pnpm-lock.yaml": true,
+        "**/postcss.config.js": true,
+        "**/tailwind.config.js": true
+    }
+}
