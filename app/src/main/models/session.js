@@ -1,14 +1,16 @@
 import { db } from '../db'
 
-
 const create = async (session) => {
   // descripcion
   // tipo
   // fecha
   // hora
   // cedula
-  const { descripcion, tipo, fecha, hora, cedula } = session
-  const result = await db.execute(`INSERT INTO session(descripcion, tipo, fecha, hora, cedula) VALUES(?, ?, ?, ?, ?)`, [descripcion, tipo, fecha, hora, cedula])
+  const { description, type, date, time, cedula } = session
+  const result = await db.execute(
+    `INSERT INTO session (description, type, date, time, cedula) VALUES(?, ?, ?, ?, ?)`,
+    [description, type, date, time, cedula]
+  )
   return result
 }
 
@@ -27,13 +29,11 @@ const remove = async (id) => {
   return result
 }
 
-
-const  sessionModel = {
+const sessionModel = {
   create,
   readALL,
   read,
   remove
-
 }
 
 export default sessionModel
