@@ -1,8 +1,8 @@
 import { db } from '../db'
 
 const create = async (entry) => {
-  const result = await db.execute(
-    `INSERT INTO entry (velocity, rpms, gear, acceleration, brake, lateral_g, tire_pressure, steering_angle, fuel, temperature, oil_pressure, run_id
+  const result = await db.execute({
+    sql: `INSERT INTO entry (velocity, rpms, gear, acceleration, brake, lateral_g, tire_pressure, steering_angle, fuel, temperature, oil_pressure, run_id
     ) VALUES(
     ?,
     ?,
@@ -17,7 +17,7 @@ const create = async (entry) => {
     ?,
     ?
     )`,
-    [
+    args: [
       entry.velocity,
       entry.rpms,
       entry.gear,
@@ -31,7 +31,7 @@ const create = async (entry) => {
       entry.oil_pressure,
       entry.run_id
     ]
-  )
+  })
   return result
 }
 
@@ -41,7 +41,7 @@ const readALL = async () => {
 }
 
 const read = async (id) => {
-  const result = await db.execute(`SELECT * FROM entry WHERE id = ?`, [id])
+  const result = await db.execute({ sql: `SELECT * FROM entry WHERE id = ?`, args: [id] })
   return result
 }
 

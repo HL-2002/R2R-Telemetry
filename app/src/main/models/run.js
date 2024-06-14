@@ -4,10 +4,10 @@ const create = async (run) => {
   // id
   // duracion
   // id_sesion
-  const result = await db.execute(`INSERT INTO run (duration, session_id) VALUES(?, ?)`, [
-    run.duration,
-    run.session_id
-  ])
+  const result = await db.execute({
+    sql: `INSERT INTO run (duration, session_id) VALUES(?, ?)`,
+    args: [run.duration, run.session_id]
+  })
   return result
 }
 
@@ -17,7 +17,7 @@ const readALL = async () => {
 }
 
 const read = async (id) => {
-  const result = await db.execute(`SELECT * FROM run WHERE id = ?`, [id])
+  const result = await db.execute({ sql: `SELECT * FROM run WHERE id = ?`, args: [id] })
   return result
 }
 

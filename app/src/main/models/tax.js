@@ -6,10 +6,10 @@ import { db } from '../db'
 
 const create = async (tax) => {
   const { description, percentage } = tax
-  const result = await db.execute(`INSERT INTO tax (description, percentage) VALUES(?, ?)`, [
-    description,
-    percentage
-  ])
+  const result = await db.execute({
+    sql: `INSERT INTO tax (description, percentage) VALUES(?, ?)`,
+    args: [description, percentage]
+  })
   return result
 }
 
@@ -20,16 +20,15 @@ const readALL = async () => {
 
 const update = async (tax) => {
   const { id, description, percentage } = tax
-  const result = await db.execute(`UPDATE tax SET description = ?, percentage = ? WHERE id = ?`, [
-    description,
-    percentage,
-    id
-  ])
+  const result = await db.execute({
+    sql: `UPDATE tax SET description = ?, percentage = ? WHERE id = ?`,
+    args: [description, percentage, id]
+  })
   return result
 }
 
 const read = async (id) => {
-  const result = await db.execute(`SELECT * FROM tax WHERE id = ?`, [id])
+  const result = await db.execute({ sql: `SELECT * FROM tax WHERE id = ?`, args: [id] })
   return result
 }
 

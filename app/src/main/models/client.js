@@ -7,10 +7,11 @@ const create = async (client) => {
   // vehiculo
   //  direccion
   const { cedula, name, lastname, vehicle, address } = client
-  const result = await db.execute(
-    `INSERT INTO client (cedula, name, lastname, vehicle, address) VALUES(?, ?, ?, ?, ?)`,
-    [cedula, name, lastname, vehicle, address]
-  )
+  console.log(cedula)
+  const result = await db.execute({
+    sql: `INSERT INTO client (cedula, name, lastname, vehicle, address) VALUES(?, ?, ?, ?, ?)`,
+    args: [cedula, name, lastname, vehicle, address]
+  })
   return result
 }
 
@@ -20,12 +21,12 @@ const readALL = async () => {
 }
 
 const read = async (cedula) => {
-  const result = await db.execute(`SELECT * FROM client WHERE cedula = ?`, [cedula])
+  const result = await db.execute({ sql: `SELECT * FROM client WHERE cedula = ?`, args: [cedula] })
   return result
 }
 
 const remove = async (cedula) => {
-  const result = await db.execute(`DELETE FROM client WHERE cedula = ?`, [cedula])
+  const result = await db.execute({ sql: `DELETE FROM client WHERE cedula = ?`, args: [cedula] })
   return result
 }
 
