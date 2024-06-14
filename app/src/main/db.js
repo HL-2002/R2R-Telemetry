@@ -8,7 +8,7 @@ export const db = createClient({
 
 // create table client
 db.execute(`CREATE TABLE IF NOT EXISTS client (
-  cedula TEXT PRIMARY KEY,
+  cedula INTEGER PRIMARY KEY,
   name TEXT,
   lastname TEXT,
   vehicle TEXT,
@@ -19,8 +19,8 @@ db.execute(`CREATE TABLE IF NOT EXISTS client (
 
 db.execute(`CREATE TABLE IF NOT EXISTS tax (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  description TEXT,
-  percentage INTEGER
+  description REAL,
+  percentage REAL
 )`)
 
 // create table bill
@@ -28,7 +28,7 @@ db.execute(`CREATE TABLE IF NOT EXISTS tax (
 db.execute(`CREATE TABLE IF NOT EXISTS bill (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   total INTEGER,
-  cost INTEGER,
+  cost REAL,
   id_tax INTEGER,
   id_session INTEGER,
   FOREIGN KEY(id_tax) REFERENCES tax(id),
@@ -42,7 +42,7 @@ db.execute(`CREATE TABLE IF NOT EXISTS session (
   type TEXT,
   date TEXT,
   time TEXT,
-  client_id TEXT,
+  client_id INTEGER,
   FOREIGN KEY(client_id) REFERENCES client(cedula)
 )`)
 
@@ -61,14 +61,17 @@ db.execute(`CREATE TABLE IF NOT EXISTS entry (
   velocity INTEGER,
   rpms INTEGER,
   gear INTEGER,
-  acceleration INTEGER,
-  brake INTEGER,
-  lateral_g INTEGER,
-  tire_pressure INTEGER,
-  steering_angle INTEGER,
-  fuel INTEGER,
-  temperature INTEGER,
-  oil_pressure INTEGER,
+  acceleration REAL,
+  brake REAL,
+  lateral_g REAL,
+  tire_pressure_fr REAL,
+  tire_pressure_fl REAL,
+  tire_pressure_rr REAL,
+  tire_pressure_rl REAL,
+  steering_angle REAL,
+  fuel REAL,
+  temperature REAL,
+  oil_pressure REAL,
   run_id INTEGER,
   FOREIGN KEY(run_id) REFERENCES run(id)
 )
