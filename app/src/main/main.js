@@ -2,6 +2,7 @@ import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import read from './reader.js'
 
 
 function createWindow() {
@@ -13,7 +14,7 @@ function createWindow() {
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: join(__dirname, '../preload/preload.js'),
       sandbox: false
     }
   })
@@ -35,6 +36,17 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
+
+// Disable navigation to external URLs and new windows
+app.on('web-contents-created', (event, contents) =>{
+  contents.on('will-navigate', (event, navigationUrl) => {
+      event.preventDefault()
+  })
+
+  contents.setWindowOpenHandler(({url}) => {
+      return {action: 'deny'}
+  })
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

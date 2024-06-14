@@ -22,7 +22,8 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@libsql/client": "^0.6.2",
     "chart.js": "^4.4.3",
-    "electron-updater": "^6.1.7"
+    "electron-updater": "^6.1.7",
+    "react-chartjs-2": "^5.2.0"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",
