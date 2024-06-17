@@ -8,6 +8,13 @@ export default function SessionSelection() {
   return (
     <>
       <button
+      className='
+      p-2
+      bg-[#e94926]
+      rounded
+      text-[#dee4ea]
+      hover:bg-[#ec6d2d]
+      '
         onClick={() => {
           setPage(0)
           ref.current.showModal()
