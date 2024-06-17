@@ -11,9 +11,9 @@ can be adjusted together.
 Plot amount depends on the datasets prop, their name based on the label, and their
 data based on the data prop.
 
-Data is set for each plot, and then real-time plotting is allowed by updating the time
-state with useEffect(), which is a function that is executed after the first render and 
-after every update.
+Each plot's data is copied into dataList, and then real-time plotting is allowed by 
+updating the time state with useEffect(), which is a function that is executed after 
+the first render and after every update.
 */
 
 
@@ -29,14 +29,31 @@ function RTCollection(props) {
 
     // Create a list of data to be plotted
     let dataList = []
-    const n = props.data.datasets.length
+    let data = props.data
+    const n = data.datasets.length
+
+    // Handle tire_pressure entries
+    const findTirePressure = (dataset) => dataset['label'] === 'tire_pressure_fl'
+    let t = data.datasets.findIndex(findTirePressure)
+
+    // Collect tire_pressure datasets, then skip them
+    if (t !== -1) {
+        dataList.push({
+            labels: data.labels,
+            datasets: [data.datasets[t], data.datasets[t+1], data.datasets[t+2], data.datasets[t+3]]})
+
+        t += 4
+    }
+    else {
+        t = 0
+    }
 
     // Set data for each plot
-    for (let i=0; i<n; i++) {
+    for (let i=t; i<n; i++) {
         // Push data for each plot
         dataList.push({
-            labels: props.data.labels,
-            datasets: [props.data.datasets[i]]
+            labels: data.labels,
+            datasets: [data.datasets[i]]
         })
     }
 

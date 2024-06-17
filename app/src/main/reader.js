@@ -14,7 +14,7 @@ function read() {
         "velocity": random(0, 250),
         "rpms": randomInt(0, 8000),
         "gear": randomInt(0, 6),
-        "acceleration": random(0, 100),
+        "throttle": random(0, 100),
         "brake": random(0, 100),
         "lateral_g": random(0, 3),
         "tire_pressure_fl": random(0, 50),
