@@ -11,17 +11,20 @@ function randomInt(min, max) {
 // Read data API
 function read() {
     return {
-        "speed": random(0, 250),
+        "velocity": random(0, 250),
         "rpms": randomInt(0, 8000),
         "gear": randomInt(0, 6),
         "acceleration": random(0, 100),
         "brake": random(0, 100),
-        "gs": random(0, 3),
-        "psi": random(0, 50),
-        "steer": randomInt(-270, 270),
+        "lateral_g": random(0, 3),
+        "tire_pressure_fl": random(0, 50),
+        "tire_pressure_fr": random(0, 50),
+        "tire_pressure_rl": random(0, 50),
+        "tire_pressure_rr": random(0, 50),
+        "steering_angle": randomInt(-270, 270),
         "fuel": random(0, 100),
-        "temp": random(0, 100),
-        "oil": random(0, 100),
+        "temperature": random(0, 100),
+        "oil_pressure": random(0, 100),
     }
 }
 
