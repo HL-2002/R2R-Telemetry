@@ -2,7 +2,7 @@ import { db } from '../db'
 
 const create = async (entry) => {
   const result = await db.execute({
-    sql: `INSERT INTO entry (velocity, rpms, gear, acceleration, brake, lateral_g, 
+    sql: `INSERT INTO entry (velocity, rpms, gear, throttle, brake, lateral_g, 
   tire_pressure_fr,
   tire_pressure_fl,
   tire_pressure_rr,
@@ -26,7 +26,7 @@ const create = async (entry) => {
       entry.velocity,
       entry.rpms,
       entry.gear,
-      entry.acceleration,
+      entry.throttle,
       entry.brake,
       entry.lateral_g,
       entry.tire_pressure_fr,
