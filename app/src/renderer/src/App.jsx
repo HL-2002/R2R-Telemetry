@@ -25,6 +25,8 @@ function App(props) {
 // Test: Data selection
 // WARNING: safetySelection gotta have tire_pressure entries together, so that the data 
 // init and append algorithms works
+// WARNING: the selection items must match the API data entries, to maintain consistency
+// across the app, the API and the DB.
 let safetySelection = [
   'tire_pressure_fl', 
   'tire_pressure_fr', 
