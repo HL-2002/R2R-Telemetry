@@ -23,7 +23,8 @@
     "@libsql/client": "^0.6.2",
     "chart.js": "^4.4.3",
     "electron-updater": "^6.1.7",
-    "react-chartjs-2": "^5.2.0"
+    "react-chartjs-2": "^5.2.0",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",
