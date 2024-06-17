@@ -3,7 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import read from './reader.js'
-
+import sessionModel from './models/session.js'
 
 function createWindow() {
   // Create the browser window.
@@ -38,13 +38,13 @@ function createWindow() {
 }
 
 // Disable navigation to external URLs and new windows
-app.on('web-contents-created', (event, contents) =>{
+app.on('web-contents-created', (event, contents) => {
   contents.on('will-navigate', (event, navigationUrl) => {
-      event.preventDefault()
+    event.preventDefault()
   })
 
-  contents.setWindowOpenHandler(({url}) => {
-      return {action: 'deny'}
+  contents.setWindowOpenHandler(({ url }) => {
+    return { action: 'deny' }
   })
 })
 
@@ -64,7 +64,9 @@ app.whenReady().then(() => {
 
   // IPC handler for reading data
   ipcMain.handle('read', handleData)
-  ipcMain.handle('test', () => { return 'Test' })
+  ipcMain.handle('test', () => {
+    return 'Test'
+  })
 
   createWindow()
 
@@ -90,3 +92,9 @@ async function handleData() {
 
   return entries
 }
+
+async function getAllsessions() {
+  return (await sessionModel.readALL()).rows
+}
+
+ipcMain.handle('getAllsessions', getAllsessions)
