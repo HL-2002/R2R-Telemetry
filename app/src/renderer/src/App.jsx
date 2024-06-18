@@ -28,11 +28,11 @@ function App() {
 }
 
 // Methods
-// Test: Data creation and handling
+// Data creation and handling
 
-// Test: Data selection
-// WARNING: safetySelection gotta have tire_pressure entries together, so that the data 
-// init and append algorithms works
+// Data selection variables
+// WARNING: safetySelection gotta have tire_pressure entries together, so that the dataInit 
+// and dataUpdate functions work
 // WARNING: the selection items must match the API data entries, to maintain consistency
 // across the app, the API and the DB.
 let safetySelection = [
@@ -75,13 +75,13 @@ function dataInit(dataSelection) {
 let performanceData = dataInit(performanceSelection)
 let safetyData = dataInit(safetySelection)
 
-// Test: Config init
+// Config init
 let chartOptions = {
   responsive: true,
   maintainAspectRatio: false,
 }
 
-// Test: pause data
+// Test: pause data update
 let pause = false
 
 // Test: Time data
