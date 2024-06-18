@@ -23,6 +23,8 @@ the first render and after every update.
 // - init: bool
 // - pause: bool
 // - type: string (performance or safety)
+// - options: chart config object
+// - height: int (vh)
 function RTCollection(props) {
     // Time state
     let [time, setTime] = useState(Date.now())
@@ -35,6 +37,7 @@ function RTCollection(props) {
     // Handle tire_pressure entries
     const findTirePressure = (dataset) => dataset['label'] === 'tire_pressure_fl'
     let t = data.datasets.findIndex(findTirePressure)
+    let hasPressure = false
 
     // Collect tire_pressure datasets, then skip them
     if (t !== -1) {
@@ -43,6 +46,7 @@ function RTCollection(props) {
             datasets: [data.datasets[t], data.datasets[t+1], data.datasets[t+2], data.datasets[t+3]]})
 
         t += 4
+        hasPressure = true
     }
     else {
         t = 0
@@ -65,9 +69,17 @@ function RTCollection(props) {
         return () => clearInterval(interval);
     }, [props.frequency]);
 
+
     // Map data to plots within a div
-    return <div id="RTCollection" key="RTCollection">
-        {dataList.map((data) => <Line key={data.datasets[0].label} data={data}> </Line>)}
+    // All is contained within a single div, so that their width can be adjusted together.
+    // However, their height is adjusted individually based on the height of each plot's div.
+    return <div id="RTCollection" key="RTCollection" 
+            className='border-orange-400 border-2 p-2'
+            style={{width:50 + '%', height: props.height + 'vh'}}>
+        {dataList.map((data) => 
+            <div key={data.datasets[0].label} style={{height: props.height/(n - 3*hasPressure) + 'vh'}}>
+                <Line data={data} options={props.options}> </Line>
+            </div>)}
     </div>
 }
 

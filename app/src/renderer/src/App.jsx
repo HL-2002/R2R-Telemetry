@@ -9,14 +9,20 @@ import Chart from 'chart.js/auto'
 import RTCollection from './components/RTCollection.jsx'
 import SessionSelection from './components/SessionSelection.jsx'
 
-function App(props) {
+// Size variables (vh and vw)
+let sectionWidth = 30
+let mainWidth = 100 - sectionWidth
+let controlHeight = 15
+let mainHeight = 100 - controlHeight
+
+function App() {
   return (
     <>
-      <SessionSelection />
-    <h1>electron app</h1>
-    <Line data={safetyData}/>
-    <RTCollection data={safetyData} frequency={frequency}/>
-    <Versions />
+    <SessionSelection />
+    <div className='flex flex-row border-8' style={{width:mainWidth + 'vw'}}>
+      <RTCollection data={performanceData} options={chartOptions} height={mainHeight} frequency={frequency}/>
+      <RTCollection data={safetyData} options={chartOptions} height={mainHeight} frequency={frequency}/>
+    </div>
     </>
   )
 }
@@ -42,9 +48,9 @@ let performanceSelection = [
   'velocity', 
   'rpms', 
   'gear', 
+  'lateral_g', 
   'throttle', 
   'brake', 
-  'lateral_g', 
   'steering_angle']
 
 function dataInit(dataSelection) {
@@ -69,6 +75,12 @@ function dataInit(dataSelection) {
 let performanceData = dataInit(performanceSelection)
 let safetyData = dataInit(safetySelection)
 
+// Test: Config init
+let chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+}
+
 // Test: pause data
 let pause = false
 
@@ -79,24 +91,30 @@ let now = Date.now()
 let frequency = 500
 
 // Test: Add entries to data
-setInterval(async () => {
+setInterval(() => {
   if (!pause){
-    let n = safetyData.datasets.length
-    let time = Date.now() - now
-    let newData = await readAPI.readData()
-    safetyData.labels.push(Math.floor(time / 1000))
-    for (let i=0; i<n; i++) {
-      if (safetyData.datasets[i].label === 'tire_pressure_fl') {
-        safetyData.datasets[i].data.push(newData['tire_pressure_fl'])
-        safetyData.datasets[i+1].data.push(newData['tire_pressure_fr'])
-        safetyData.datasets[i+2].data.push(newData['tire_pressure_rl'])
-        safetyData.datasets[i+3].data.push(newData['tire_pressure_rr'])
-        i += 3
-      } else {
-        safetyData.datasets[i].data.push(newData[safetyData.datasets[i].label])
-      }
-    }
+    updateData(safetyData)
+    updateData(performanceData)
   }
 }, frequency)
+
+async function updateData(data) {
+  let newData = await readAPI.readData()
+  let n = data.datasets.length
+  let time = Date.now() - now
+  data.labels.push(Math.floor(time / 1000))
+  for (let i=0; i<n; i++) {
+    if (data.datasets[i].label === 'tire_pressure_fl') {
+      data.datasets[i].data.push(newData['tire_pressure_fl'])
+      data.datasets[i+1].data.push(newData['tire_pressure_fr'])
+      data.datasets[i+2].data.push(newData['tire_pressure_rl'])
+      data.datasets[i+3].data.push(newData['tire_pressure_rr'])
+      i += 3
+    } else {
+      data.datasets[i].data.push(newData[data.datasets[i].label])
+    }
+  }
+  console.log(data.datasets)
+}
 
 export default App
