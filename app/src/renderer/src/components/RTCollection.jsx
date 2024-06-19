@@ -258,14 +258,24 @@ function configScale(label) {
             }
             return y
 
-        case 'throttle':
-        case 'brake':
-        case 'fuel':
+        // TODO: Define min and maxvalues for these two
         case 'temperature':
+            y.max = 100
+            y.ticks.stepSize = 25
+            return y
+        
         case 'oil_pressure':
             y.max = 100
             y.ticks.stepSize = 25
             return y
+
+        case 'throttle':
+        case 'brake':
+        case 'fuel':
+            y.max = 100
+            y.ticks.stepSize = 25
+            return y
+            
     }
 }
 
