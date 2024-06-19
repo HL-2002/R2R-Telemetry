@@ -30,20 +30,28 @@ function RTCollection(props) {
     let [time, setTime] = useState(Date.now())
 
     // Create a list of data to be plotted
-    let dataList = []
+    let configList = []
     let data = props.data
     const n = data.datasets.length
+
+    // Plot's titles
+    let title = ''
 
     // Handle tire_pressure entries
     const findTirePressure = (dataset) => dataset['label'] === 'tire_pressure_fl'
     let t = data.datasets.findIndex(findTirePressure)
     let hasPressure = false
 
-    // Collect tire_pressure datasets, then skip them
+    // Collect and format tire_pressure datasets, then skip them
     if (t !== -1) {
-        dataList.push({
+        let dataSet = {
             labels: data.labels,
-            datasets: [data.datasets[t], data.datasets[t+1], data.datasets[t+2], data.datasets[t+3]]})
+            datasets: [data.datasets[t], data.datasets[t+1], data.datasets[t+2], data.datasets[t+3]]}
+
+        let optionsSet = configInit(data, t)
+        optionsSet.plugins.legend = true
+
+        configList.push({data: dataSet, options: optionsSet})
 
         t += 4
         hasPressure = true
@@ -54,11 +62,36 @@ function RTCollection(props) {
 
     // Set data for each plot
     for (let i=t; i<n; i++) {
-        // Push data for each plot
-        dataList.push({
+        // Set data for each plot
+        let dataSet = {
             labels: data.labels,
             datasets: [data.datasets[i]]
+        }
+
+        // Set options for each plot
+        let optionsSet = configInit(data, i)
+
+        // Push data and options to configList
+        configList.push({data: dataSet, options: optionsSet})
+    }
+
+    // Format each plot's style
+    configList.forEach((config) => {
+        config.data.datasets.forEach((dataset) => {
+            if (!dataset.label.includes('tire')) {
+                dataset.borderColor = '#ec6d2d'
+            }
+            dataset.borderWidth = 1.5
+            dataset.pointRadius = 0
         })
+    })
+
+    // Set collection title
+    if (props.type === 'performance') {
+        title = 'Rendimiento'
+    }
+    else if (props.type === 'safety') {
+        title = 'Salud'
     }
 
     // Set update interval
@@ -73,14 +106,122 @@ function RTCollection(props) {
     // Map data to plots within a div
     // All is contained within a single div, so that their width can be adjusted together.
     // However, their height is adjusted individually based on the height of each plot's div.
-    return <div id="RTCollection" key="RTCollection" 
-            className='border-orange-400 border-2 p-2'
+    return (
+        <div id="RTCollection" 
+            key="RTCollection" 
+            className='border-orange-400 border-2 p-2' 
             style={{width:50 + '%', height: props.height + 'vh'}}>
-        {dataList.map((data) => 
-            <div key={data.datasets[0].label} style={{height: props.height/(n - 3*hasPressure) + 'vh'}}>
-                <Line data={data} options={props.options}> </Line>
-            </div>)}
-    </div>
+            <h1>{title}</h1>
+            {configList.map((config) => (
+                <div key={config.data.datasets[0].label} style={{height: props.height/(n - 3*hasPressure) + 'vh'}}>
+                    <Line data={config.data} options={config.options} />
+                </div>
+            ))}
+        </div>
+    )
+}
+
+function formatTitle(title){
+    title = title.replace('_fl', '')
+    return title.replace('_', ' ').toUpperCase()
+}
+
+function configInit(data, index) {
+    return {
+        // Performance options
+        normalized: true,
+        scales: {
+            y: configScale(data.datasets[index].label)
+        },
+        elements: {
+            point: {
+                radius: 0,
+            }
+        },
+        spanGaps: true,
+        // Aesthetic options
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: false,
+            title: {
+                display: true,
+                text: formatTitle(data.datasets[index].label),
+                align: 'start',
+            }
+        }
+    }
+}
+
+function configScale(label) {
+    switch (label) {
+        case 'velocity':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 250
+            }
+        case 'rpms':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 8000
+            }
+        case 'gear':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 6
+            }
+        case 'lateral_g':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 3
+            }
+        case 'throttle':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 100
+            }
+        case 'brake':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 100
+            }
+        case 'steering_angle':
+            return {
+                type: 'linear',
+                min: -270,
+                max: 270
+            }
+        case 'fuel':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 100
+            }
+        case 'temperature':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 100
+            }
+        case 'oil_pressure':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 100
+            }
+        case 'tire_pressure_fl':
+            return {
+                type: 'linear',
+                min: 0,
+                max: 50
+            }
+    }
 }
 
 export default RTCollection

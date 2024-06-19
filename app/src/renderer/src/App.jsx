@@ -9,7 +9,7 @@ import Chart from 'chart.js/auto'
 import RTCollection from './components/RTCollection.jsx'
 import SessionSelection from './components/SessionSelection.jsx'
 
-//import test contect for session
+//import test context for session
 import { useSessionStore } from './context/SessionContext'
 
 // Size variables (vh and vw)
@@ -39,15 +39,15 @@ function App() {
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <RTCollection
           data={performanceData}
-          options={chartOptions}
           height={mainHeight}
           frequency={frequency}
+          type='performance'
         />
         <RTCollection
           data={safetyData}
-          options={chartOptions}
           height={mainHeight}
           frequency={frequency}
+          type='safety'
         />
       </div>
     </>
@@ -104,20 +104,17 @@ function dataInit(dataSelection) {
 let performanceData = dataInit(performanceSelection)
 let safetyData = dataInit(safetySelection)
 
-// Config init
-let chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false
-}
-
 // Test: pause data update
 let pause = false
 
 // Test: Time data
+// NOTE: This updates the data in the first second to simulate the first reading
 let now = Date.now()
+updateData(safetyData)
+updateData(performanceData)
 
 // Test: frequency of data update
-let frequency = 500
+let frequency = 1000
 
 // Test: Add entries to data
 setInterval(() => {
@@ -143,7 +140,6 @@ async function updateData(data) {
       data.datasets[i].data.push(newData[data.datasets[i].label])
     }
   }
-  console.log(data.datasets)
 }
 
 export default App
