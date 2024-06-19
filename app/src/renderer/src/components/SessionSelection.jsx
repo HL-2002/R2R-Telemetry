@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Dialog from './Dialog'
+import { useSessionStore } from '../context/SessionContext'
 
 export default function SessionSelection() {
   const [page, setPage] = useState(0)
@@ -8,13 +9,13 @@ export default function SessionSelection() {
   return (
     <>
       <button
-      className='
+        className="
       p-2
       bg-[#e94926]
       rounded
       text-[#dee4ea]
       hover:bg-[#ec6d2d]
-      '
+      "
         onClick={() => {
           setPage(0)
           ref.current.showModal()
@@ -27,6 +28,7 @@ export default function SessionSelection() {
         {page === 1 ? <NewSession /> : null}
         {page === 2 ? <LoadSession /> : null}
         {page === 3 ? <LoadSession multiple /> : null}
+        {page === 4 ? <LoadSession toDelete /> : null}
       </Dialog>
     </>
   )
@@ -68,12 +70,19 @@ function MainPage({ changePage }) {
       >
         Comparar sesiones
       </SessionButton>
-      <SessionButton>Borrar Sesion</SessionButton>
+      <SessionButton
+        onClick={() => {
+          changePage(4)
+        }}
+      >
+        Borrar Sesion
+      </SessionButton>
     </div>
   )
 }
 
-function LoadSession({ multiple = false }) {
+function LoadSession({ multiple = false, toDelete = false }) {
+  const setSession = useSessionStore((state) => state.setSession)
   const [data, setData] = useState([])
   const [selected, setSelected] = useState([])
 
@@ -82,6 +91,12 @@ function LoadSession({ multiple = false }) {
   }, [])
 
   const handleSelect = (id) => {
+    // if is previous selected, remove it
+    if (selected.includes(id)) {
+      setSelected(selected.filter((item) => item !== id))
+      return
+    }
+
     if (!multiple) {
       setSelected([id])
       return
@@ -90,6 +105,18 @@ function LoadSession({ multiple = false }) {
       setSelected(selected.filter((item) => item !== id))
     } else {
       setSelected([...selected, id])
+    }
+  }
+
+  const handleClick = () => {
+    if (toDelete) {
+      selected.forEach((id) => {
+        api.deleteSession(id)
+      })
+    }
+
+    if (!multiple && !toDelete) {
+      setSession(data.find((item) => item.id === selected[0]))
     }
   }
 
@@ -116,8 +143,12 @@ function LoadSession({ multiple = false }) {
           )
         })}
       </ul>
-      <button className="absolute right-7 -bottom-4 p-2 bg-[#e94926] rounded text-[#dee4ea] hover:bg-[#ec6d2d]">
-        Cargar
+      <button
+        onClick={handleClick}
+        className="absolute right-7 -bottom-4 p-2 bg-[#e94926] rounded text-[#dee4ea] hover:bg-[#ec6d2d]"
+      >
+        {/* if is multiple is 'comparar', if is toDelete 'borrar', else 'cargar' */}
+        {multiple ? 'Comparar' : toDelete ? 'Borrar' : 'Cargar'}
       </button>
     </div>
   )

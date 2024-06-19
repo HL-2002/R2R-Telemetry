@@ -98,3 +98,7 @@ async function getAllsessions() {
 }
 
 ipcMain.handle('getAllsessions', getAllsessions)
+
+ipcMain.on('deleteSession', async (event, id) => {
+  await sessionModel.remove(id)
+})
