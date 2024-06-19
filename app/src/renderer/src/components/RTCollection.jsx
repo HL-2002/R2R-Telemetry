@@ -1,6 +1,10 @@
 // Collection of plots, so that their size can be adjusted together
 import { useState, useEffect } from 'react'
 import {Line} from 'react-chartjs-2'
+import {Chart} from 'chart.js/auto'
+import annotationPlugin from 'chartjs-plugin-annotation'
+
+Chart.register(annotationPlugin)
 
 /* Real Time Plot Collection
 
@@ -17,14 +21,16 @@ the first render and after every update.
 */
 
 
-// Expects a list of datasets, each with a label and data, which then it'll plot
-// Props:
-// - data: {labels: [String], datasets: [{label: String, data: [Number]}]}
-// - init: bool
-// - pause: bool
-// - type: string (performance or safety)
-// - options: chart config object
-// - height: int (vh)
+/* 
+NOTE: Expects a list of datasets, each with a label and data, which then it'll plot
+Props:
+- data: {labels: [String], datasets: [{label: String, data: [Number]}]}
+- init: bool
+- pause: bool
+- type: string (performance or safety)
+- options: chart config object
+- height: int (vh)
+*/
 function RTCollection(props) {
     // Time state
     let [time, setTime] = useState(Date.now())
@@ -49,7 +55,24 @@ function RTCollection(props) {
             datasets: [data.datasets[t], data.datasets[t+1], data.datasets[t+2], data.datasets[t+3]]}
 
         let optionsSet = configInit(data, t)
+        // Setup of additional options
         optionsSet.plugins.legend = true
+        optionsSet.scales.x = {display: false}
+
+        // Test: Setting a line annotation for safety threshold
+        optionsSet.plugins.annotation = {
+            annotations: {
+                line: {
+                    drawTime: 'beforeDatasetsDraw',
+                    type: 'line',
+                    borderColor: 'white',
+                    borderWidth: 1.5,
+                    borderDash: [10,5],
+                    scaleID: 'y',
+                    value: 30
+                }
+            }      
+        }
 
         configList.push({data: dataSet, options: optionsSet})
 
@@ -71,11 +94,16 @@ function RTCollection(props) {
         // Set options for each plot
         let optionsSet = configInit(data, i)
 
+        // Disable x-axis for all but the last plot
+        if (i !== n-1 ) {
+            optionsSet.scales.x = {display: false}
+        }
+
         // Push data and options to configList
         configList.push({data: dataSet, options: optionsSet})
     }
 
-    // Format each plot's style
+    // Format each plot's line style
     configList.forEach((config) => {
         config.data.datasets.forEach((dataset) => {
             if (!dataset.label.includes('tire')) {
@@ -85,6 +113,7 @@ function RTCollection(props) {
             dataset.pointRadius = 0
         })
     })
+
 
     // Set collection title
     if (props.type === 'performance') {
@@ -113,7 +142,8 @@ function RTCollection(props) {
             style={{width:50 + '%', height: props.height + 'vh'}}>
             <h1>{title}</h1>
             {configList.map((config) => (
-                <div key={config.data.datasets[0].label} style={{height: props.height/(n - 3*hasPressure) + 'vh'}}>
+                // Height is divided by the number of plots, minus the space taken by the title
+                <div key={config.data.datasets[0].label} style={{height: (props.height-2)/(n - 3*hasPressure) + 'vh'}}>
                     <Line data={config.data} options={config.options} />
                 </div>
             ))}
@@ -121,10 +151,12 @@ function RTCollection(props) {
     )
 }
 
+
 function formatTitle(title){
     title = title.replace('_fl', '')
     return title.replace('_', ' ').toUpperCase()
 }
+
 
 function configInit(data, index) {
     return {
@@ -148,80 +180,94 @@ function configInit(data, index) {
                 display: true,
                 text: formatTitle(data.datasets[index].label),
                 align: 'start',
-            }
+            },
         }
     }
 }
 
+
 function configScale(label) {
+    let y = {
+        type: 'linear',
+        min: 0,
+        max: 0,
+        ticks: {
+            stepSize: 0,
+        },
+        afterTickToLabelConversion: (ctx) => {}
+    }
+    /*
+    NOTE: To be able to disable the x-axis display for bigger plots, the y axis of all
+    plots must be aligned. This means that each plot's labels must be of the same length.
+
+    As most labels have a length of 4 (3 digits and a blank), the afterTickToLabelConversion 
+    callback function is used to add a blank space to the left of the labels with less than 4
+    characters, so that all labels have the same length.
+
+    These labels are the rpms, gear, lateral_g, and tire_pressure_fl.
+    */
     switch (label) {
         case 'velocity':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 250
-            }
+            y.max = 250
+            y.ticks.stepSize = 50
+            return y
+
         case 'rpms':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 8000
+            y.max = 8000
+            y.ticks.stepSize = 1000
+            y.afterTickToLabelConversion = (ctx) => {
+                ctx.ticks.forEach((tick) => {
+                    tick.label = '    ' + tick.value/1000
+                })
             }
+            return y
+
         case 'gear':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 6
+            y.max = 6
+            y.ticks.stepSize = 1
+            y.afterTickToLabelConversion = (ctx) => {
+                ctx.ticks.forEach((tick) => {
+                    tick.label = '    ' + tick.value
+                })
             }
+            return y
+
         case 'lateral_g':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 3
+            y.max = 3
+            y.ticks.stepSize = 1
+            y.afterTickToLabelConversion = (ctx) => {
+                ctx.ticks.forEach((tick) => {
+                    tick.label = '    ' + tick.value
+                })
             }
-        case 'throttle':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 100
-            }
-        case 'brake':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 100
-            }
+            return y
+
         case 'steering_angle':
-            return {
-                type: 'linear',
-                min: -270,
-                max: 270
-            }
-        case 'fuel':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 100
-            }
-        case 'temperature':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 100
-            }
-        case 'oil_pressure':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 100
-            }
+            y.max = 270
+            y.min = -270
+            y.ticks.stepSize = 90
+            return y
+
         case 'tire_pressure_fl':
-            return {
-                type: 'linear',
-                min: 0,
-                max: 50
+            y.max = 50
+            y.ticks.stepSize = 15
+            y.afterTickToLabelConversion = (ctx) => {
+                ctx.ticks.forEach((tick) => {
+                    tick.label = '  ' + tick.value
+                })
             }
+            return y
+
+        case 'throttle':
+        case 'brake':
+        case 'fuel':
+        case 'temperature':
+        case 'oil_pressure':
+            y.max = 100
+            y.ticks.stepSize = 25
+            return y
     }
 }
+
 
 export default RTCollection
