@@ -1,6 +1,6 @@
 import {useState} from 'react';
 
-function PauseButton (props) {
+function PauseButton ({pause, setPause}) {
 
     return (
         <button className='m-2 p-2
@@ -8,8 +8,8 @@ function PauseButton (props) {
                 rounded
                 text-[#dee4ea]
                 hover:bg-[#ec6d2d]' 
-                onClick={() => props.setPause(!props.pause)}> 
-            {props.pause ? "Continuar" : "Pausar"} 
+                onClick={() => setPause(!pause)}> 
+            {pause ? "Continuar" : "Pausar"} 
         </button>
     );
 }
