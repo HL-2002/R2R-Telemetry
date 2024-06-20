@@ -128,6 +128,7 @@ function RTCollection(props) {
         const interval = setInterval(() => {
             setTime(Date.now());
         }, props.frequency);
+        
         return () => clearInterval(interval);
     }, [props.frequency]);
 
@@ -135,20 +136,30 @@ function RTCollection(props) {
     // Map data to plots within a div
     // All is contained within a single div, so that their width can be adjusted together.
     // However, their height is adjusted individually based on the height of each plot's div.
-    return (
-        <div id="RTCollection" 
-            key="RTCollection" 
-            className='border-orange-400 border-2 p-2' 
-            style={{width:50 + '%', height: props.height + 'vh'}}>
-            <h1>{title}</h1>
-            {configList.map((config) => (
-                // Height is divided by the number of plots, minus the space taken by the title
-                <div key={config.data.datasets[0].label} style={{height: (props.height-2)/(n - 3*hasPressure) + 'vh'}}>
-                    <Line data={config.data} options={config.options} />
-                </div>
-            ))}
-        </div>
-    )
+
+    // If there are plots to display, return the collection
+    // Otherwise, return an empty div
+    if (n > 0) {
+        return (
+            <div id="RTCollection" 
+                key="RTCollection" 
+                className='border-orange-400 border-2 p-2' 
+                // Width is adjusted based the existence of safety plots
+                style={{width:50 + 50 * props.notSafety + '%', height: props.height + 'vh'}}>
+                <h1>{title}</h1>
+                {configList.map((config) => (
+                    // Height is divided by the number of plots, minus the space taken by the title
+                    <div key={config.data.datasets[0].label} style={{height: (props.height-2)/(n - 3*hasPressure) + 'vh'}}>
+                        <Line data={config.data} options={config.options} />
+                    </div>
+                ))}
+            </div>)
+    }
+    else{
+        return <div></div>
+    }
+    
+    
 }
 
 
@@ -171,6 +182,7 @@ function configInit(data, index) {
             }
         },
         spanGaps: true,
+        animation: false,
         // Aesthetic options
         responsive: true,
         maintainAspectRatio: false,
