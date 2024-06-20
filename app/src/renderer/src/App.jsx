@@ -8,6 +8,7 @@ import Chart from 'chart.js/auto'
 // Test: Importing and using collection
 import RTCollection from './components/RTCollection.jsx'
 import SessionSelection from './components/SessionSelection.jsx'
+import PauseButton from './components/PauseButton.jsx'
 
 //import test context for session
 import { useSessionStore } from './context/SessionContext'
@@ -18,12 +19,24 @@ let mainWidth = 100 - sectionWidth
 let controlHeight = 15
 let mainHeight = 100 - controlHeight
 
+// Test: frequency of data update
+let frequency = 1000
+
 function App() {
   const session = useSessionStore((state) => state.session)
+  const [pause, setPause] = useState(false)
 
   useEffect(() => {
-    console.log(session)
-  }, [session])
+      // Test: Add entries to data
+      let graphInterval = setInterval(() => {
+        if (!pause) {
+          updateData(performanceData)
+        }
+        updateData(safetyData)
+      }, frequency)
+
+      return () => clearInterval(graphInterval)
+  }, [pause])
 
   return (
     <>
@@ -36,17 +49,20 @@ function App() {
         <h1>no hay session</h1>
       )}
       <SessionSelection />
+      <PauseButton pause={pause} setPause={setPause}/>
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <RTCollection
           data={performanceData}
           height={mainHeight}
           frequency={frequency}
+          notSafety={safetySelection.length ? 0 : 1}
           type='performance'
         />
         <RTCollection
           data={safetyData}
           height={mainHeight}
           frequency={frequency}
+          notSafety={0}
           type='safety'
         />
       </div>
@@ -82,6 +98,25 @@ let performanceSelection = [
   'steering_angle'
 ]
 
+
+// Returns an object with the structure of the data object
+/*
+data = {
+  labels: [],
+  datasets: [
+    {
+      sessionId: 0,
+      label: 'velocity',
+      data: []
+    },
+    {
+      sessionId: 0,
+      label: 'rpms',
+      data: []
+    },
+    ...]
+}
+*/
 function dataInit(dataSelection) {
   let data = {
     labels: [],
@@ -112,17 +147,6 @@ let pause = false
 let now = Date.now()
 updateData(safetyData)
 updateData(performanceData)
-
-// Test: frequency of data update
-let frequency = 1000
-
-// Test: Add entries to data
-setInterval(() => {
-  if (!pause) {
-    updateData(safetyData)
-    updateData(performanceData)
-  }
-}, frequency)
 
 async function updateData(data) {
   let newData = await readAPI.readData()

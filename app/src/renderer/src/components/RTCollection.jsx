@@ -31,13 +31,12 @@ Props:
 - options: chart config object
 - height: int (vh)
 */
-function RTCollection(props) {
+function RTCollection({data, init, pause, type, options, height, frequency, notSafety}) {
     // Time state
     let [time, setTime] = useState(Date.now())
 
     // Create a list of data to be plotted
     let configList = []
-    let data = props.data
     const n = data.datasets.length
 
     // Plot's titles
@@ -116,10 +115,10 @@ function RTCollection(props) {
 
 
     // Set collection title
-    if (props.type === 'performance') {
+    if (type === 'performance') {
         title = 'Rendimiento'
     }
-    else if (props.type === 'safety') {
+    else if (type === 'safety') {
         title = 'Salud'
     }
 
@@ -127,28 +126,39 @@ function RTCollection(props) {
     useEffect(() => {
         const interval = setInterval(() => {
             setTime(Date.now());
-        }, props.frequency);
+        }, frequency);
+
         return () => clearInterval(interval);
-    }, [props.frequency]);
+    }, [frequency]);
 
 
     // Map data to plots within a div
     // All is contained within a single div, so that their width can be adjusted together.
     // However, their height is adjusted individually based on the height of each plot's div.
-    return (
-        <div id="RTCollection" 
-            key="RTCollection" 
-            className='border-orange-400 border-2 p-2' 
-            style={{width:50 + '%', height: props.height + 'vh'}}>
-            <h1>{title}</h1>
-            {configList.map((config) => (
-                // Height is divided by the number of plots, minus the space taken by the title
-                <div key={config.data.datasets[0].label} style={{height: (props.height-2)/(n - 3*hasPressure) + 'vh'}}>
-                    <Line data={config.data} options={config.options} />
-                </div>
-            ))}
-        </div>
-    )
+
+    // If there are plots to display, return the collection
+    // Otherwise, return an empty div
+    if (n > 0) {
+        return (
+            <div id="RTCollection" 
+                key="RTCollection" 
+                className='border-orange-400 border-2 p-2' 
+                // Width is adjusted based the existence of safety plots
+                style={{width:50 + 50 * notSafety + '%', height: height + 'vh'}}>
+                <h1>{title}</h1>
+                {configList.map((config) => (
+                    // Height is divided by the number of plots, minus the space taken by the title
+                    <div key={config.data.datasets[0].label} style={{height: (height-2)/(n - 3*hasPressure) + 'vh'}}>
+                        <Line data={config.data} options={config.options} />
+                    </div>
+                ))}
+            </div>)
+    }
+    else{
+        return <div></div>
+    }
+    
+    
 }
 
 
@@ -171,6 +181,7 @@ function configInit(data, index) {
             }
         },
         spanGaps: true,
+        animation: false,
         // Aesthetic options
         responsive: true,
         maintainAspectRatio: false,
