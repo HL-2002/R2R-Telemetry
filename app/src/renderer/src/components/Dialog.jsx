@@ -6,6 +6,7 @@ export default function Dialog({ children, isOpen, someRef }) {
     m-auto
     bg-[#22272b]
     relative
+    pt-9
     "
       open={isOpen}
     >
