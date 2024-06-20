@@ -217,7 +217,7 @@ function configScale(label) {
             y.ticks.stepSize = 1000
             y.afterTickToLabelConversion = (ctx) => {
                 ctx.ticks.forEach((tick) => {
-                    tick.label = '    ' + tick.value/1000
+                    tick.label = '   ' + tick.value/1000 + 'k'
                 })
             }
             return y
