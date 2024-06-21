@@ -1,4 +1,4 @@
-function NewButton ({init, setInit, setPause, run, setRun}) {
+function NewButton ({init, run, setRun}) {
   const handleClick = () => {
     setRun(run + 1)
   }
