@@ -174,6 +174,10 @@ const TypesEvents = [
   {
     name: 'Endurance',
     graph: ['velocity', 'rpms', 'gear', 'throttle', 'brake', 'steering_angle']
+  },
+  {
+    name: 'Personalizado',
+    graph: []
   }
 ]
 
