@@ -4,7 +4,7 @@ const useSelectionStore = create((set) => ({
   selections: [],
   setSelection: (selection) => set({ selections: selection }),
   Axis: 'time',
-  setAxis: (axis) => set({ axis })
+  setAxis: (axis) => set({ Axis: axis })
 }))
 
 export { useSelectionStore }
