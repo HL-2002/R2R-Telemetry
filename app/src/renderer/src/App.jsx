@@ -14,6 +14,7 @@ import InitButton from './components/InitButton.jsx'
 // Import context for session
 import { useSessionStore } from './context/SessionContext'
 import { useSelectionStore } from './context/SelectionContext.js'
+import { DataSelection } from './components/DataSelection.jsx'
 
 // Size variables (vh and vw)
 let sectionWidth = 30
@@ -97,6 +98,8 @@ let safetyData = dataInit(safetySelection)
 
 function App() {
   const session = useSessionStore((state) => state.session)
+  const selection = useSelectionStore((state) => state.selections)
+  const Axis = useSelectionStore((state) => state.Axis)
   const [pause, setPause] = useState(false)
   const [init, setInit] = useState(false)
   const [now, setNow] = useState(0)
@@ -153,7 +156,21 @@ function App() {
       ) : (
         <h1>no hay session</h1>
       )}
+
+      {selection.length ?  (
+        <h1>
+          la seleccion actual es: {selection} y el eje es: {Axis}
+        </h1>
+      ) : (
+        <h1>no hay seleccion</h1>
+      )
+        
+      
+      }
+
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
+        <DataSelection/>
+
         <SessionSelection />
         <InitButton init={init} 
                     setInit={setInit} 
