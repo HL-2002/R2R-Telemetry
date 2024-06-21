@@ -13,6 +13,7 @@ import InitButton from './components/InitButton.jsx'
 
 // Import context for session
 import { useSessionStore } from './context/SessionContext'
+import { useSelectionStore } from './context/SelectionContext.js'
 
 // Size variables (vh and vw)
 let sectionWidth = 30
