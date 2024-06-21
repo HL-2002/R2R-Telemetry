@@ -10,6 +10,8 @@ import RTCollection from './components/RTCollection.jsx'
 import SessionSelection from './components/SessionSelection.jsx'
 import PauseButton from './components/PauseButton.jsx'
 import InitButton from './components/InitButton.jsx'
+import NewButton from './components/NewButton.jsx'
+import TerminateButton from './components/TerminateButton.jsx'
 
 // Import context for session
 import { useSessionStore } from './context/SessionContext'
@@ -23,7 +25,7 @@ let controlHeight = 15
 let mainHeight = 100 - controlHeight
 
 // Frequency of data update
-let frequency = 1000
+let frequency = 100
 
 
 // Data creation and handling
@@ -103,31 +105,59 @@ function App() {
   const [pause, setPause] = useState(false)
   const [init, setInit] = useState(false)
   const [now, setNow] = useState(0)
+  const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
 
-  // TODO: solve the init and pause issues
-  // Add entries to data every frequency milliseconds
+  // Update data every frequency milliseconds
   useEffect(() => {
-    if (init && !pause && performanceData.labels.length === 0) {
-      updateData(performanceData)
-      updateData(safetyData)
+    // 1st data update at the beginning
+    async function fetchData() {
+      if (init && !pause && performanceData.labels.length === 0) {
+        let newData = await readAPI.logData()
+        updateData(newData, performanceData)
+        updateData(newData, safetyData)
+      }
     }
 
-      let graphInterval = setInterval(() => {
-        if (init && !terminate) {
-          if (!pause) {
-            updateData(performanceData)
-          }
-          updateData(safetyData)
-        }
-      }, frequency)
+    fetchData()
 
-      return () => clearInterval(graphInterval)
+    // Data update every frequency milliseconds
+    /* 
+    GLITCH: Pausing and continuing the reading calls for a new data update, and when the action
+    is offset by a few milliseconds (specially when frequency is greater than 500ms), the data 
+    update is called twice in a row, which causes the safety plot to graph a new entry immediately
+    and having more readings than the performance one.
+
+    As reading is not equal to logging (that is, the data is not saved in a database), and the
+    updates are done at different times, data isn't overwritten nor lost, thus data update is not 
+    a problem, but it can be confusing when the data is being displayed in real-time.
+    */
+    let graphInterval = setInterval(async () => {
+      if (init && !terminate) {
+        let newData = {}
+        if (!pause) {
+          newData = await readAPI.logData()
+          updateData(newData, performanceData)
+        }
+        else {
+          newData = await readAPI.readData()
+        }
+        updateData(newData, safetyData)
+      }
+    }, frequency)
+
+    return () => clearInterval(graphInterval)
   }, [init, pause, terminate])
 
 
-  async function updateData(data) {
-    let newData = await readAPI.readData()
+  // Refresh data upon new run
+  useEffect(() => {
+    performanceData = dataInit(performanceSelection)
+    safetyData = dataInit(safetySelection)
+  }, [run])
+
+
+  function updateData(newData, data) {
     let n = data.datasets.length
     let time = Date.now() - now
     data.labels.push(Math.floor(time / 1000))
@@ -167,21 +197,26 @@ function App() {
         
       
       }
+      <h3> Intento Nro{run}</h3>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <DataSelection/>
-
         <SessionSelection />
         <InitButton init={init} 
                     setInit={setInit} 
                     now={now} 
-                    setNow={setNow}
-                    updateData={updateData}
-                    performanceData={performanceData}
-                    safetyData={safetyData}/>
+                    setNow={setNow}/>
         <PauseButton pause={pause} 
                     setPause={setPause}
                     init={init}/>
+        <NewButton init={init}
+                   setInit={setInit}
+                   setPause={setPause} 
+                   run={run}
+                   setRun={setRun}/>
+        <TerminateButton terminate={terminate}
+                          setTerminate={setTerminate}
+                          init={init}/>
       </div>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
