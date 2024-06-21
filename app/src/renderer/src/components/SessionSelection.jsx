@@ -144,7 +144,6 @@ function LoadSession({ multiple = false, toDelete = false }) {
             </li>
           )
         })}
-        
       </ul>
       <button
         onClick={handleClick}

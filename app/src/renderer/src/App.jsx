@@ -27,7 +27,6 @@ let mainHeight = 100 - controlHeight
 // Frequency of data update
 let frequency = 100
 
-
 // Data creation and handling
 
 // Data selection variables
@@ -97,7 +96,6 @@ function dataInit(dataSelection) {
 let performanceData = dataInit(performanceSelection)
 let safetyData = dataInit(safetySelection)
 
-
 function App() {
   const session = useSessionStore((state) => state.session)
   const selection = useSelectionStore((state) => state.selections)
@@ -108,14 +106,13 @@ function App() {
   const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
 
-
   // Update data every frequency milliseconds
   useEffect(() => {
     // 1st data update at the beginning
     /* 
       Needs to be defined as function and then called right away to be able to 
       perform async operations within the useEffect hook
-    */ 
+    */
     async function fetchData() {
       if (init && !pause && performanceData.labels.length === 0) {
         let newData = await readAPI.logData()
@@ -143,8 +140,7 @@ function App() {
         if (!pause) {
           newData = await readAPI.logData()
           updateData(newData, performanceData)
-        }
-        else {
+        } else {
           newData = await readAPI.readData()
         }
         updateData(newData, safetyData)
@@ -153,7 +149,6 @@ function App() {
 
     return () => clearInterval(graphInterval)
   }, [init, pause, terminate])
-
 
   // Refresh data upon new run when the component is reloaded
   useEffect(() => {
@@ -164,7 +159,6 @@ function App() {
       safetyData = dataInit(safetySelection)
     }
   }, [run])
-
 
   function updateData(newData, data) {
     let n = data.datasets.length
@@ -183,7 +177,6 @@ function App() {
     }
   }
 
-
   // Component
   return (
     <>
@@ -196,36 +189,22 @@ function App() {
         <h1>no hay session</h1>
       )}
 
-      {selection.length ?  (
+      {selection.length ? (
         <h1>
           la seleccion actual es: {selection} y el eje es: {Axis}
         </h1>
       ) : (
         <h1>no hay seleccion</h1>
-      )
-        
-      
-      }
+      )}
       <h3> Intento Nro{run}</h3>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
-        <SessionSelection/>
-        <DataSelection/>
-        <InitButton init={init} 
-                    setInit={setInit} 
-                    now={now} 
-                    setNow={setNow}/>
-        <PauseButton pause={pause} 
-                    setPause={setPause}
-                    init={init}/>
-        <NewButton init={init}
-                   setInit={setInit}
-                   setPause={setPause} 
-                   run={run}
-                   setRun={setRun}/>
-        <TerminateButton terminate={terminate}
-                          setTerminate={setTerminate}
-                          init={init}/>
+        <SessionSelection />
+        <DataSelection />
+        <InitButton init={init} setInit={setInit} now={now} setNow={setNow} />
+        <PauseButton pause={pause} setPause={setPause} init={init} />
+        <NewButton init={init} setInit={setInit} setPause={setPause} run={run} setRun={setRun} />
+        <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} />
       </div>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
@@ -234,19 +213,18 @@ function App() {
           height={mainHeight}
           frequency={frequency}
           notSafety={safetySelection.length ? 0 : 1}
-          type='performance'
+          type="performance"
         />
         <RTCollection
           data={safetyData}
           height={mainHeight}
           frequency={frequency}
           notSafety={0}
-          type='safety'
+          type="safety"
         />
       </div>
     </>
   )
 }
-
 
 export default App

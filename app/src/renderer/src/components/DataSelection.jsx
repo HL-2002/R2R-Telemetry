@@ -84,7 +84,7 @@ export function DataSelection() {
                 }}
                 className="flex gap-2"
               >
-                <input type="radio" name="axis"  />
+                <input type="radio" name="axis" />
                 <span> Distancia</span>
               </label>
               <label
@@ -93,7 +93,7 @@ export function DataSelection() {
                 }}
                 className="flex gap-2"
               >
-                <input type="radio" name="axis"  defaultChecked />
+                <input type="radio" name="axis" defaultChecked />
                 <span> tiempo</span>
               </label>
             </div>

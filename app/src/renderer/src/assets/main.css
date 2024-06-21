@@ -165,9 +165,6 @@ code {
   }
 }
 
-
-
-
 .scroll-hidden::-webkit-scrollbar {
   display: none;
 }
