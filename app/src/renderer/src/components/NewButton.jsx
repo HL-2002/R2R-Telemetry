@@ -1,9 +1,8 @@
 function NewButton ({init, setInit, setPause, run, setRun}) {
   const handleClick = () => {
-    setInit(false)
-    setPause(false)
     setRun(run + 1)
   }
+  
   return (
     <button onClick={handleClick} 
             className='

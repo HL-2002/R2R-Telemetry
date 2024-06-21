@@ -25,13 +25,13 @@ the first render and after every update.
 NOTE: Expects a list of datasets, each with a label and data, which then it'll plot
 Props:
 - data: {labels: [String], datasets: [{label: String, data: [Number]}]}
-- init: bool
-- pause: bool
 - type: string (performance or safety)
-- options: chart config object
+- axis: string (time or distance)
 - height: int (vh)
+- frequency: int (ms)
+- notSafety: boolean (true if there are no safety plots)
 */
-function RTCollection({data, init, pause, type, options, height, frequency, notSafety}) {
+function RTCollection({data, type, axis, height, frequency, notSafety}) {
     // Time state
     let [time, setTime] = useState(Date.now())
 
@@ -58,7 +58,7 @@ function RTCollection({data, init, pause, type, options, height, frequency, notS
         optionsSet.plugins.legend = true
         optionsSet.scales.x = {display: false}
 
-        // Test: Setting a line annotation for safety threshold
+        // Set a line annotation for safety threshold
         optionsSet.plugins.annotation = {
             annotations: {
                 line: {
@@ -129,7 +129,7 @@ function RTCollection({data, init, pause, type, options, height, frequency, notS
         }, frequency);
 
         return () => clearInterval(interval);
-    }, [frequency]);
+    });
 
 
     // Map data to plots within a div
@@ -157,8 +157,6 @@ function RTCollection({data, init, pause, type, options, height, frequency, notS
     else{
         return <div></div>
     }
-    
-    
 }
 
 

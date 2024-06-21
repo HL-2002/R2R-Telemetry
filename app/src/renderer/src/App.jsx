@@ -108,9 +108,14 @@ function App() {
   const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
 
+
   // Update data every frequency milliseconds
   useEffect(() => {
     // 1st data update at the beginning
+    /* 
+      Needs to be defined as function and then called right away to be able to 
+      perform async operations within the useEffect hook
+    */ 
     async function fetchData() {
       if (init && !pause && performanceData.labels.length === 0) {
         let newData = await readAPI.logData()
@@ -123,14 +128,14 @@ function App() {
 
     // Data update every frequency milliseconds
     /* 
-    GLITCH: Pausing and continuing the reading calls for a new data update, and when the action
-    is offset by a few milliseconds (specially when frequency is greater than 500ms), the data 
-    update is called twice in a row, which causes the safety plot to graph a new entry immediately
-    and having more readings than the performance one.
+      GLITCH: Pausing and continuing the reading calls for a new data update, and when the action
+      is offset by a few milliseconds (specially when frequency is greater than 500ms), the data 
+      update is called twice in a row, which causes the safety plot to graph a new entry immediately
+      and having more readings than the performance one.
 
-    As reading is not equal to logging (that is, the data is not saved in a database), and the
-    updates are done at different times, data isn't overwritten nor lost, thus data update is not 
-    a problem, but it can be confusing when the data is being displayed in real-time.
+      As reading is not equal to logging (that is, the data is not saved in a database), and the
+      updates are done at different times, data isn't overwritten nor lost, thus data update is not 
+      a problem, but it can be confusing when the data is being displayed in real-time.
     */
     let graphInterval = setInterval(async () => {
       if (init && !terminate) {
@@ -150,10 +155,14 @@ function App() {
   }, [init, pause, terminate])
 
 
-  // Refresh data upon new run
+  // Refresh data upon new run when the component is reloaded
   useEffect(() => {
-    performanceData = dataInit(performanceSelection)
-    safetyData = dataInit(safetySelection)
+    return () => {
+      setInit(false)
+      setPause(false)
+      performanceData = dataInit(performanceSelection)
+      safetyData = dataInit(safetySelection)
+    }
   }, [run])
 
 
@@ -200,8 +209,8 @@ function App() {
       <h3> Intento Nro{run}</h3>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
+        <SessionSelection/>
         <DataSelection/>
-        <SessionSelection />
         <InitButton init={init} 
                     setInit={setInit} 
                     now={now} 
