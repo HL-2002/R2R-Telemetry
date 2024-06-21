@@ -123,7 +123,7 @@ function LoadSession({ multiple = false, toDelete = false }) {
 
   return (
     <div className="p-8 max-w-xl relative">
-      <ul className="flex flex-wrap max-h-80 gap-4 p-2 overflow-x-hidden overflow-y-scroll">
+      <ul className="flex flex-wrap max-h-80 gap-4 p-2 overflow-x-hidden overflow-y-scroll scroll-hidden">
         {data.map((data, index) => {
           return (
             <li
@@ -143,6 +143,7 @@ function LoadSession({ multiple = false, toDelete = false }) {
             </li>
           )
         })}
+        
       </ul>
       <button
         onClick={handleClick}

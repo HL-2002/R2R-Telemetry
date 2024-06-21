@@ -164,3 +164,10 @@ code {
     display: none;
   }
 }
+
+
+
+
+.scroll-hidden::-webkit-scrollbar {
+  display: none;
+}
