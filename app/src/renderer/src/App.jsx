@@ -12,6 +12,7 @@ import PauseButton from './components/PauseButton.jsx'
 
 //import test context for session
 import { useSessionStore } from './context/SessionContext'
+import { useSelectionStore } from './context/SelectionContext.js'
 
 // Size variables (vh and vw)
 let sectionWidth = 30
@@ -24,19 +25,21 @@ let frequency = 1000
 
 function App() {
   const session = useSessionStore((state) => state.session)
+  const selection = useSelectionStore((state) => state.selections)
   const [pause, setPause] = useState(false)
 
   useEffect(() => {
-      // Test: Add entries to data
-      let graphInterval = setInterval(() => {
-        if (!pause) {
-          updateData(performanceData)
-        }
-        updateData(safetyData)
-      }, frequency)
+    // Test: Add entries to data
+    let graphInterval = setInterval(() => {
+      if (!pause) {
+        updateData(performanceData)
+      }
+      updateData(safetyData)
+    }, frequency)
 
-      return () => clearInterval(graphInterval)
+    return () => clearInterval(graphInterval)
   }, [pause])
+
 
   return (
     <>
@@ -48,22 +51,24 @@ function App() {
       ) : (
         <h1>no hay session</h1>
       )}
+
+      {selection != null ? <h1>la seleccion actual es {selection}</h1> : <h1>no hay seleccion</h1>}
       <SessionSelection />
-      <PauseButton pause={pause} setPause={setPause}/>
+      <PauseButton pause={pause} setPause={setPause} />
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <RTCollection
           data={performanceData}
           height={mainHeight}
           frequency={frequency}
           notSafety={safetySelection.length ? 0 : 1}
-          type='performance'
+          type="performance"
         />
         <RTCollection
           data={safetyData}
           height={mainHeight}
           frequency={frequency}
           notSafety={0}
-          type='safety'
+          type="safety"
         />
       </div>
     </>
@@ -97,7 +102,6 @@ let performanceSelection = [
   'brake',
   'steering_angle'
 ]
-
 
 // Returns an object with the structure of the data object
 /*
