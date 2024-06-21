@@ -63,7 +63,8 @@ app.whenReady().then(() => {
   })
 
   // IPC handler for reading data
-  ipcMain.handle('read', handleData)
+  ipcMain.handle('read', readData)
+  ipcMain.handle('log', logData)
   ipcMain.handle('test', () => {
     return 'Test'
   })
@@ -86,7 +87,15 @@ app.on('window-all-closed', () => {
   }
 })
 
-async function handleData() {
+// Only reads and returns the data
+async function readData() {
+  let entries = await read()
+
+  return entries
+}
+
+// Reads and logs the data before returning it
+async function logData() {
   let entries = await read()
   // TODO: Do things with the data before sending it
 

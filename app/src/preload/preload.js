@@ -15,7 +15,8 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('readAPI', {
-      readData: () => ipcRenderer.invoke('read')
+      readData: () => ipcRenderer.invoke('read'),
+      logData: () => ipcRenderer.invoke('log')
     })
   } catch (error) {
     console.error(error)
