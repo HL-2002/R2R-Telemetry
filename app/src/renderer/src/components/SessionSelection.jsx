@@ -10,12 +10,13 @@ export default function SessionSelection() {
     <>
       <button
         className="
-      p-2
-      bg-[#e94926]
-      rounded
-      text-[#dee4ea]
-      hover:bg-[#ec6d2d]
-      "
+        m-2
+        p-2
+        bg-[#e94926]
+        rounded
+        text-[#dee4ea]
+        hover:bg-[#ec6d2d]
+        "
         onClick={() => {
           setPage(0)
           ref.current.showModal()
