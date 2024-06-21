@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Dialog from './Dialog'
 import { useSessionStore } from '../context/SessionContext'
+import { useSelectionStore } from '../context/SelectionContext'
 
 export default function SessionSelection() {
   const [page, setPage] = useState(0)
@@ -154,8 +155,6 @@ function LoadSession({ multiple = false, toDelete = false }) {
   )
 }
 
-
-
 const Allgraph = ['velocity', 'rpms', 'gear', 'lateral_g', 'throttle', 'brake', 'steering_angle']
 
 const TypesEvents = [
@@ -179,6 +178,12 @@ const TypesEvents = [
 
 function NewSession() {
   const [selected, setSelected] = useState('')
+  const setSelection = useSelectionStore((state) => state.setSelection)
+
+  const handleSelect = () => {
+    const sel = TypesEvents.find((item) => item.name === selected).graph
+    setSelection(sel)
+  }
 
   return (
     <div className="grid grid-cols-2 ">
@@ -223,6 +228,7 @@ function NewSession() {
         </ul>
 
         <button
+          onClick={handleSelect}
           className="
         p-2
         bg-[#e94926]
