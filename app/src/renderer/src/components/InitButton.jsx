@@ -1,4 +1,4 @@
-function PauseButton ({pause, setPause, init}) {
+function InitButton ({init, setInit, setNow}) {
 
     return (
         <button className='m-2 p-2
@@ -7,11 +7,11 @@ function PauseButton ({pause, setPause, init}) {
                 text-[#dee4ea]
                 hover:bg-[#ec6d2d]
                 disabled:opacity-50' 
-                onClick={() => setPause(!pause)}
-                disabled={!init}> 
-            {pause ? 'Reanudar' : 'Pausar'} 
+                onClick={() => {setInit(true); setNow(Date.now())} }
+                disabled={init}> 
+            Iniciar
         </button>
     );
 }
 
-export default PauseButton;
+export default InitButton;
