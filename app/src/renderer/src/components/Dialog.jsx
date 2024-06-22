@@ -3,11 +3,11 @@ export default function Dialog({ children, isOpen, someRef }) {
     <dialog
       ref={someRef}
       className="p-6 rounded 
-    m-auto
-    bg-[#22272b]
-    relative
-    pt-9
-    "
+      m-auto
+      bg-[#22272b]
+      relative
+      pt-9
+      "
       open={isOpen}
     >
       <button

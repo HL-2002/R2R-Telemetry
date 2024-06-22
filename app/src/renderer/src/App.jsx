@@ -214,6 +214,7 @@ function App() {
         <InitButton init={init} 
                     setInit={setInit} 
                     now={now} 
+                    pause={pause}
                     setNow={setNow}/>
         <PauseButton pause={pause} 
                     setPause={setPause}
