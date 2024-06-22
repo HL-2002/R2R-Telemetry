@@ -13,7 +13,7 @@ function NewButton ({init, run, pause, setRun}) {
                 text-[#dee4ea]
                 hover:bg-[#ec6d2d]
                 disabled:opacity-50
-            ' 
+            "
             disabled={(init & pause)}>
       {String(init & pause)}
     </button>
