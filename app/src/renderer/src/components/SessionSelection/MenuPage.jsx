@@ -34,8 +34,6 @@ export function MenuPage({ changePage }) {
   )
 }
 
-
-
 function SessionButton({ children, onClick }) {
   return (
     <button
