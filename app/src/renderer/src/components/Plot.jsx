@@ -9,7 +9,7 @@ function Plot(props) {
     datasets: [
       {
         label: 'Speed',
-        data: [12],
+        data: [12]
       }
     ]
   }

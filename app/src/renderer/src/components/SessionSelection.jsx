@@ -144,7 +144,6 @@ function LoadSession({ multiple = false, toDelete = false }) {
             </li>
           )
         })}
-        
       </ul>
       <button
         onClick={handleClick}
@@ -175,6 +174,10 @@ const TypesEvents = [
   {
     name: 'Endurance',
     graph: ['velocity', 'rpms', 'gear', 'throttle', 'brake', 'steering_angle']
+  },
+  {
+    name: 'Personalizado',
+    graph: []
   }
 ]
 
