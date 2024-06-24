@@ -18,7 +18,7 @@ if (process.contextIsolated) {
       readData: () => ipcRenderer.invoke('read'),
       logData: () => ipcRenderer.invoke('log'),
       initDatalog: () => ipcRenderer.invoke('init'),
-    })``
+    })
   } catch (error) {
     console.error(error)
   }
