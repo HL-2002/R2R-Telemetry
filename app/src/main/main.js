@@ -113,7 +113,31 @@ async function getAllsessions() {
 }
 
 ipcMain.handle('getAllsessions', getAllsessions)
+ipcMain.handle('getSession', async (event, id) => {
+  return (await sessionModel.read(id)).rows[0]
+})
 
 ipcMain.on('deleteSession', async (event, id) => {
   await sessionModel.remove(id)
+})
+
+ipcMain.handle('CreateSession', async (event, sessionInfo) => {
+  const date = new Date().toLocaleDateString()
+  const currentTime = new Date()
+  const hours = currentTime.getHours().toString().padStart(2, '0')
+  const minutes = currentTime.getMinutes().toString().padStart(2, '0')
+  const formattedTime = `${hours}:${minutes}`
+
+  const name = sessionInfo.name || `Sesión ${minutes}`
+
+  const Session = {
+    description: name,
+    type: sessionInfo.type,
+    date,
+    time: formattedTime,
+    cedula: sessionInfo.cedula
+  }
+
+  const rs = await sessionModel.create(Session)
+  return { id: rs.lastInsertRowid, ...Session }
 })

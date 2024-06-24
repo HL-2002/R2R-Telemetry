@@ -4,7 +4,9 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   getAllSessions: () => ipcRenderer.invoke('getAllsessions'),
-  deleteSession: (id) => ipcRenderer.send('deleteSession', id)
+  getSession: (id) => ipcRenderer.invoke('getSession', id),
+  deleteSession: (id) => ipcRenderer.send('deleteSession', id),
+  CreateSession: (sessionInfo) => ipcRenderer.invoke('CreateSession', sessionInfo)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
