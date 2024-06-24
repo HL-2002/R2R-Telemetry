@@ -8,7 +8,7 @@ const create = async (session) => {
   // cedula
   const { description, type, date, time, cedula } = session
   const result = await db.execute({
-    sql: `INSERT INTO session (description, type, date, time, cedula) VALUES(?, ?, ?, ?, ?)`,
+    sql: `INSERT INTO session (description, type, date, time, client_id) VALUES(?, ?, ?, ?, ?)`,
     args: [description, type, date, time, cedula]
   })
   return result
