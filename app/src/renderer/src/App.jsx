@@ -203,7 +203,7 @@ function App() {
         <DataSelection />
         <InitButton init={init} setInit={setInit} now={now} pause={pause} setNow={setNow} />
         <PauseButton pause={pause} setPause={setPause} init={init} />
-        <NewButton init={init} setInit={setInit} setPause={setPause} run={run} setRun={setRun} />
+        <NewButton init={init} run={run} pause={pause} setPause={setPause} setRun={setRun} />
         <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} />
       </div>
 
