@@ -115,7 +115,7 @@ function App() {
     */
     async function fetchData() {
       if (init && !pause && performanceData.labels.length === 0) {
-        let newData = await readAPI.logData()
+        let newData = await readAPI.initDataLog()
         updateData(newData, performanceData)
         updateData(newData, safetyData)
       }

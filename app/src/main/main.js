@@ -65,9 +65,7 @@ app.whenReady().then(() => {
   // IPC handler for reading data
   ipcMain.handle('read', readData)
   ipcMain.handle('log', logData)
-  ipcMain.handle('test', () => {
-    return 'Test'
-  })
+  ipcMain.handle('init', initDataLog)
 
   createWindow()
 
@@ -90,6 +88,14 @@ app.on('window-all-closed', () => {
 // Only reads and returns the data
 async function readData() {
   let entries = await read()
+
+  return entries
+}
+
+// Initializes the data log at session creation
+async function initDataLog() {
+  let entries = await read()
+  // TODO: Do things with the data before sending it
 
   return entries
 }
