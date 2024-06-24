@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react'
 
 // TODO: Need to import necessary modules for Chart.js only
 import Chart from 'chart.js/auto'
+//for notifications
+import { Toaster } from 'react-hot-toast'
+
+// contants
+import constants from './constants.js'
+const { TypesEvents } = constants
 
 // Component imports
 import RTCollection from './components/RTCollection.jsx'
@@ -99,6 +105,7 @@ let safetyData = dataInit(safetySelection)
 function App() {
   const session = useSessionStore((state) => state.session)
   const selection = useSelectionStore((state) => state.selections)
+  const setSelection = useSelectionStore((state) => state.setSelection)
   const Axis = useSelectionStore((state) => state.Axis)
   const [pause, setPause] = useState(false)
   const [init, setInit] = useState(false)
@@ -177,12 +184,18 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
+    setSelection(sele)
+  }, [session])
+
   // Component
   return (
     <>
+      <Toaster />
       {session != null ? (
         <h1>
-          la sesion actual activa es: {session?.description} con id {session?.id} y tipo{' '}
+          la sesion actual activa es: {session?.description} con id {session?.id.toString()} y tipo{' '}
           {session?.type}
         </h1>
       ) : (
