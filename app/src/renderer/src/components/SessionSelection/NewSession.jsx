@@ -1,20 +1,37 @@
 import { useState } from 'react'
-import { useSelectionStore } from '../../context/SelectionContext'
+import { useSessionStore } from '../../context/SessionContext'
+import toast from 'react-hot-toast'
+
 import constants from '../../constants'
 
 const { TypesEvents } = constants
 
 export function NewSession() {
   const [selected, setSelected] = useState('')
-  const setSelection = useSelectionStore((state) => state.setSelection)
+  const setSession = useSessionStore((state) => state.setSession)
 
-  const handleSelect = () => {
-    const sel = TypesEvents.find((item) => item.name === selected).graph
-    setSelection(sel)
+  const handleSelect = async (event) => {
+    const form = new FormData(event.target)
+    if (!selected) {
+      toast.error('Seleccione un tipo de sesion')
+      return
+    }
+
+    if (!form.get('name') || !form.get('cedula')) {
+      toast.error('Ingrese los datos faltantes')
+    }
+
+    const session = await api.CreateSession({
+      type: selected,
+      name: form.get('name'),
+      cedula: form.get('cedula')
+    })
+    toast.success('Sesion creada con exito')
+    setSession(session)
   }
 
   return (
-    <div className="grid grid-cols-2 ">
+    <div className="grid grid-cols-3 ">
       <div
         className="
   p-4
@@ -54,9 +71,19 @@ export function NewSession() {
             )
           })}
         </ul>
+      </dir>
+
+      <form onSubmit={handleSelect} className="flex flex-col gap-2 text-[#dee4ea]">
+        <label className="flex flex-col gap-2">
+          Nombre de la sesion
+          <input type="text" name="name" className="text-black p-1 rounded" />
+        </label>
+        <label className="flex flex-col gap-2">
+          Cedula cliente
+          <input type="text" name="cedula" className="text-black p-1 rounded" />
+        </label>
 
         <button
-          onClick={handleSelect}
           className="
         p-2
         bg-[#e94926]
@@ -66,13 +93,13 @@ export function NewSession() {
 
         // aling right - bottom
         absolute
-        right-1
-        -bottom-1
+        right-8
+        bottom-8
         "
         >
           Ok
         </button>
-      </dir>
+      </form>
     </div>
   )
 }
