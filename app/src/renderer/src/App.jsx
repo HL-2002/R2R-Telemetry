@@ -7,7 +7,7 @@ import Chart from 'chart.js/auto'
 
 // Component imports
 import RTCollection from './components/RTCollection.jsx'
-import SessionSelection from './components/SessionSelection.jsx'
+import SessionSelection from './components/SessionSelection/SessionSelection.jsx'
 import PauseButton from './components/PauseButton.jsx'
 import InitButton from './components/InitButton.jsx'
 import NewButton from './components/NewButton.jsx'
@@ -199,24 +199,12 @@ function App() {
       <h3> Intento Nro{run}</h3>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
-        <SessionSelection/>
-        <DataSelection/>
-        <InitButton init={init} 
-                    setInit={setInit} 
-                    now={now} 
-                    pause={pause}
-                    setNow={setNow}/>
-        <PauseButton pause={pause} 
-                    setPause={setPause}
-                    init={init}/>
-        <NewButton init={init}
-                   setInit={setInit}
-                   setPause={setPause} 
-                   run={run}
-                   setRun={setRun}/>
-        <TerminateButton terminate={terminate}
-                          setTerminate={setTerminate}
-                          init={init}/>
+        <SessionSelection />
+        <DataSelection />
+        <InitButton init={init} setInit={setInit} now={now} pause={pause} setNow={setNow} />
+        <PauseButton pause={pause} setPause={setPause} init={init} />
+        <NewButton init={init} setInit={setInit} setPause={setPause} run={run} setRun={setRun} />
+        <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} />
       </div>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>

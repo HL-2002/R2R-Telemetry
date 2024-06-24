@@ -1,4 +1,4 @@
-function NewButton ({init, run, pause, setRun}) {
+function NewButton({ init, run, pause, setRun }) {
   const handleClick = () => {
     setRun(run + 1)
   }
@@ -14,7 +14,8 @@ function NewButton ({init, run, pause, setRun}) {
                 hover:bg-[#ec6d2d]
                 disabled:opacity-50
             "
-            disabled={(init & pause)}>
+      disabled={init & pause}
+    >
       {String(init & pause)}
     </button>
   )

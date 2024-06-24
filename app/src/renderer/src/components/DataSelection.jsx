@@ -2,9 +2,8 @@ import Dialog from './Dialog'
 
 import { useSelectionStore } from '../context/SelectionContext'
 import { useState, useRef, useEffect } from 'react'
-
-// All the available graphs
-const Allgraph = ['velocity', 'rpms', 'gear', 'lateral_g', 'throttle', 'brake', 'steering_angle']
+import constants from '../constants'
+const { Allgraph } = constants
 
 export function DataSelection() {
   // create a reference to the dialog
