@@ -26,6 +26,10 @@ export function NewSession() {
       name: form.get('name'),
       cedula: form.get('cedula')
     })
+    if (session?.error) {
+      toast.error('Cedula cliente no encontrada')
+      return
+    }
     toast.success('Sesion creada con exito')
     setSession(session)
   }
