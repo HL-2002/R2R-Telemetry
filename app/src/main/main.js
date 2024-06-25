@@ -39,11 +39,11 @@ function createWindow() {
 
 // Disable navigation to external URLs and new windows
 app.on('web-contents-created', (event, contents) => {
-  contents.on('will-navigate', (event, navigationUrl) => {
+  contents.on('will-navigate', (event) => {
     event.preventDefault()
   })
 
-  contents.setWindowOpenHandler(({ url }) => {
+  contents.setWindowOpenHandler(() => {
     return { action: 'deny' }
   })
 })
