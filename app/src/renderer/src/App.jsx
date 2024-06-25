@@ -28,9 +28,11 @@ import { DataSelection } from './components/DataSelection.jsx'
 let sectionWidth = 30
 let mainWidth = 100 - sectionWidth
 let controlHeight = 15
-let mainHeight = 100 - controlHeight
+let mainHeight = 90 - controlHeight
 
 // Frequency of data update
+// NOTE: The lesser it is, the more precise the distance plot will be, but the more
+// data will be stored and displayed, which can slow down the app.
 let frequency = 100
 
 // Data creation and handling
@@ -102,6 +104,11 @@ function dataInit(dataSelection) {
 let performanceData = dataInit(performanceSelection)
 let safetyData = dataInit(safetySelection)
 
+let performanceTimeLabels = []
+let performanceDistanceLabels = []
+let safetyTimeLabels = []
+let safetyDistanceLabels = []
+
 function App() {
   const session = useSessionStore((state) => state.session)
   const selection = useSelectionStore((state) => state.selections)
@@ -123,6 +130,8 @@ function App() {
     async function fetchData() {
       if (init && !pause && performanceData.labels.length === 0) {
         let newData = await readAPI.initDataLog()
+        updateLabels(performanceTimeLabels, performanceDistanceLabels, newData)
+        updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, performanceData)
         updateData(newData, safetyData)
       }
@@ -146,31 +155,48 @@ function App() {
         let newData = {}
         if (!pause) {
           newData = await readAPI.logData()
+          updateLabels(performanceTimeLabels, performanceDistanceLabels, newData)
           updateData(newData, performanceData)
         } else {
           newData = await readAPI.readData()
         }
         updateData(newData, safetyData)
+        updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
       }
     }, frequency)
 
+    // Clear interval when the component is unmounted
     return () => clearInterval(graphInterval)
   }, [init, pause, terminate])
 
-  // Refresh data upon new run when the component is reloaded
+  // Reset data upon new run when the component is reloaded
   useEffect(() => {
     return () => {
       setInit(false)
       setPause(false)
       performanceData = dataInit(performanceSelection)
       safetyData = dataInit(safetySelection)
+      performanceTimeLabels = []
+      performanceDistanceLabels = []
+      safetyTimeLabels = []
+      safetyDistanceLabels = []
     }
   }, [run])
 
+  // Change axis upon selection
+  useEffect(() => {
+    if (Axis === 'time') {
+      performanceData.labels = performanceTimeLabels
+      safetyData.labels = safetyTimeLabels
+    } else if (Axis === 'distance') {
+      performanceData.labels = performanceDistanceLabels
+      safetyData.labels = safetyDistanceLabels
+    }
+  // NOTE: init is included to reload the component once there's a new run and init is set to true
+  },[init, Axis])
+
   function updateData(newData, data) {
     let n = data.datasets.length
-    let time = Date.now() - now
-    data.labels.push(Math.floor(time / 1000))
     for (let i = 0; i < n; i++) {
       if (data.datasets[i].label === 'tire_pressure_fl') {
         data.datasets[i].data.push(newData['tire_pressure_fl'])
@@ -181,6 +207,18 @@ function App() {
       } else {
         data.datasets[i].data.push(newData[data.datasets[i].label])
       }
+    }
+  }
+
+  function updateLabels(timeLabels, distanceLabels, newData) {
+    let time = Date.now() - now
+    timeLabels.push(Math.floor(time / 1000))
+    let speed = newData['velocity'] * 1e3 / 3600
+    let dt = frequency / 1000
+    if (distanceLabels.length === 0) {
+      distanceLabels.push(speed * dt)
+    } else {
+      distanceLabels.push(speed * dt + distanceLabels[distanceLabels.length - 1])
     }
   }
 
@@ -226,6 +264,7 @@ function App() {
           height={mainHeight}
           frequency={frequency}
           notSafety={safetySelection.length ? 0 : 1}
+          axis={Axis}
           type="performance"
         />
         <RTCollection
@@ -233,6 +272,7 @@ function App() {
           height={mainHeight}
           frequency={frequency}
           notSafety={0}
+          axis={Axis}
           type="safety"
         />
       </div>
