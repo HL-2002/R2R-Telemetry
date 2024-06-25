@@ -212,9 +212,10 @@ function App() {
 
   function updateLabels(timeLabels, distanceLabels, newData) {
     let time = Date.now() - now
-    timeLabels.push(Math.floor(time / 1000))
-    let speed = newData['velocity'] * 1e3 / 3600
-    let dt = frequency / 1000
+    timeLabels.push(Math.floor(time / 1000)) // ms to seconds
+    let speed = newData['velocity'] * 1e3 / 3600 // km/h to m/s
+    let dt = frequency / 1000 // ms to seconds
+    // distance as the Riemman sum of the speed times the interval of given speed
     if (distanceLabels.length === 0) {
       distanceLabels.push(speed * dt)
     } else {
