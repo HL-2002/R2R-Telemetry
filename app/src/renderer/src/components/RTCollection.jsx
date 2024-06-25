@@ -53,7 +53,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
       datasets: [data.datasets[t], data.datasets[t + 1], data.datasets[t + 2], data.datasets[t + 3]]
     }
 
-    let optionsSet = configInit(data, t)
+    let optionsSet = configInit(data, t, axis)
     // Setup of additional options
     optionsSet.plugins.legend = true
     optionsSet.scales.x = { display: false }
@@ -90,7 +90,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
     }
 
     // Set options for each plot
-    let optionsSet = configInit(data, i)
+    let optionsSet = configInit(data, i, axis)
 
     // Disable x-axis for all but the last plot
     if (i !== n - 1) {
@@ -165,12 +165,13 @@ function formatTitle(title) {
   return title.replace('_', ' ').toUpperCase()
 }
 
-function configInit(data, index) {
+function configInit(data, index, axis) {
   return {
     // Performance options
     normalized: true,
     scales: {
-      y: configScale(data.datasets[index].label)
+      y: configScale(data.datasets[index].label),
+      x: configAxis(axis)
     },
     elements: {
       point: {
@@ -283,6 +284,33 @@ function configScale(label) {
       y.ticks.stepSize = 25
       return y
   }
+}
+
+function configAxis(axis) {
+  let x = {
+    ticks: {},
+    title: {
+      display:true,
+    }
+  }
+
+  if (axis === 'time') {
+    x.ticks = {
+      callback: function (value, index, ticks) {
+        return this.getLabelForValue(value)
+      }
+    }
+    x.title.text = "Tiempo (s)"
+  } else if (axis === 'distance') {
+    x.ticks = {
+      callback: function (value, index, ticks) {
+        return (this.getLabelForValue(value)/1e3).toFixed(2)
+      }
+    }
+    x.title.text = "Distancia (km)"
+  }
+
+  return x
 }
 
 export default RTCollection
