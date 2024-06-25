@@ -137,7 +137,10 @@ ipcMain.handle('CreateSession', async (event, sessionInfo) => {
     time: formattedTime,
     cedula: sessionInfo.cedula
   }
-
-  const rs = await sessionModel.create(Session)
-  return { id: rs.lastInsertRowid, ...Session }
+  try {
+    const rs = await sessionModel.create(Session)
+    return { id: rs.lastInsertRowid, ...Session }
+  } catch (e) {
+    return { error: 'CedulaNotFound' }
+  }
 })
