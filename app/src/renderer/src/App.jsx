@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react'
 
 // TODO: Need to import necessary modules for Chart.js only
 import Chart from 'chart.js/auto'
-//for notifications
+// For notifications
 import { Toaster } from 'react-hot-toast'
 
-// contants
+// Constants
 import constants from './constants.js'
 const { TypesEvents } = constants
 
@@ -19,7 +19,7 @@ import InitButton from './components/InitButton.jsx'
 import NewButton from './components/NewButton.jsx'
 import TerminateButton from './components/TerminateButton.jsx'
 
-// Import context for session
+// Import contexts
 import { useSessionStore } from './context/SessionContext'
 import { useSelectionStore } from './context/SelectionContext.js'
 import { DataSelection } from './components/DataSelection.jsx'
@@ -28,19 +28,21 @@ import { DataSelection } from './components/DataSelection.jsx'
 let sectionWidth = 30
 let mainWidth = 100 - sectionWidth
 let controlHeight = 15
-let mainHeight = 100 - controlHeight
+let mainHeight = 90 - controlHeight
 
 // Frequency of data update
+// NOTE: The lesser it is, the more precise the distance plot will be, but the more
+// data will be stored and displayed, which can slow down the app.
 let frequency = 100
 
 // Data creation and handling
 
 // Data selection variables
-// WARNING: safetySelection gotta have tire_pressure entries together, so that the dataInit
+// WARNING: safetyEntries gotta have tire_pressure entries together, so that the dataInit
 // and dataUpdate functions work
 // WARNING: the selection items must match the API data entries, to maintain consistency
 // across the app, the API and the DB.
-let safetySelection = [
+let safetyEntries = [
   'tire_pressure_fl',
   'tire_pressure_fr',
   'tire_pressure_rl',
@@ -50,7 +52,7 @@ let safetySelection = [
   'oil_pressure'
 ]
 
-let performanceSelection = [
+let performanceEntries = [
   'velocity',
   'rpms',
   'gear',
@@ -99,8 +101,14 @@ function dataInit(dataSelection) {
 
 // Data initialization based on selection
 // WARNING: Must be outside the App component to avoid reinitialization
-let performanceData = dataInit(performanceSelection)
-let safetyData = dataInit(safetySelection)
+let performanceData = dataInit(performanceEntries)
+let safetyData = dataInit(safetyEntries)
+let performanceSelection = dataInit(performanceEntries)
+
+let performanceTimeLabels = []
+let performanceDistanceLabels = []
+let safetyTimeLabels = []
+let safetyDistanceLabels = []
 
 function App() {
   const session = useSessionStore((state) => state.session)
@@ -123,6 +131,8 @@ function App() {
     async function fetchData() {
       if (init && !pause && performanceData.labels.length === 0) {
         let newData = await readAPI.initDataLog()
+        updateLabels(performanceTimeLabels, performanceDistanceLabels, newData)
+        updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, performanceData)
         updateData(newData, safetyData)
       }
@@ -146,31 +156,59 @@ function App() {
         let newData = {}
         if (!pause) {
           newData = await readAPI.logData()
+          updateLabels(performanceTimeLabels, performanceDistanceLabels, newData)
           updateData(newData, performanceData)
         } else {
           newData = await readAPI.readData()
         }
         updateData(newData, safetyData)
+        updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
       }
     }, frequency)
 
+    // Clear interval when the component is unmounted
     return () => clearInterval(graphInterval)
   }, [init, pause, terminate])
 
-  // Refresh data upon new run when the component is reloaded
+  // Reset data upon new run when the component is reloaded
   useEffect(() => {
     return () => {
       setInit(false)
       setPause(false)
-      performanceData = dataInit(performanceSelection)
-      safetyData = dataInit(safetySelection)
+      performanceData = dataInit(performanceEntries)
+      safetyData = dataInit(safetyEntries)
+      performanceTimeLabels = []
+      performanceDistanceLabels = []
+      safetyTimeLabels = []
+      safetyDistanceLabels = []
     }
   }, [run])
 
+  // Change axis upon selection
+  useEffect(() => {
+    if (Axis === 'time') {
+      performanceData.labels = performanceTimeLabels
+      safetyData.labels = safetyTimeLabels
+    } else if (Axis === 'distance') {
+      performanceData.labels = performanceDistanceLabels
+      safetyData.labels = safetyDistanceLabels
+    }
+  // NOTE: init is included to reload the component once there's a new run and init is set to true
+  },[init, Axis])
+
+  // Change selection
+  useEffect(() => {
+    performanceSelection = filterData(performanceData, selection)
+  }, [selection])
+
+  // TODO: comment your things Luis
+  useEffect(() => {
+    const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
+    setSelection(sele)
+  }, [session])
+
   function updateData(newData, data) {
     let n = data.datasets.length
-    let time = Date.now() - now
-    data.labels.push(Math.floor(time / 1000))
     for (let i = 0; i < n; i++) {
       if (data.datasets[i].label === 'tire_pressure_fl') {
         data.datasets[i].data.push(newData['tire_pressure_fl'])
@@ -184,10 +222,35 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
-    setSelection(sele)
-  }, [session])
+  function updateLabels(timeLabels, distanceLabels, newData) {
+    let time = Date.now() - now
+    timeLabels.push(Math.floor(time / 1000)) // ms to seconds
+    let speed = newData['velocity'] * 1e3 / 3600 // km/h to m/s
+    let dt = frequency / 1000 // ms to seconds
+    // distance as the Riemman sum of the speed times the interval of given speed
+    if (distanceLabels.length === 0) {
+      distanceLabels.push(speed * dt)
+    } else {
+      distanceLabels.push(speed * dt + distanceLabels[distanceLabels.length - 1])
+    }
+  }
+
+  function filterData(data, selection) {
+    if (selection !== undefined) {
+      let filteredData = {
+        labels: data.labels,
+        datasets: []
+      }
+  
+      filteredData.datasets = data.datasets.filter((dataset) => selection.includes(dataset.label))
+      console.log(filteredData)
+  
+      return filteredData
+    }
+    else {
+      return data
+    }
+  }
 
   // Component
   return (
@@ -222,10 +285,11 @@ function App() {
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <RTCollection
-          data={performanceData}
+          data={performanceSelection}
           height={mainHeight}
           frequency={frequency}
-          notSafety={safetySelection.length ? 0 : 1}
+          notSafety={safetyEntries.length ? 0 : 1}
+          axis={Axis}
           type="performance"
         />
         <RTCollection
@@ -233,6 +297,7 @@ function App() {
           height={mainHeight}
           frequency={frequency}
           notSafety={0}
+          axis={Axis}
           type="safety"
         />
       </div>
