@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 
 const ErrorMessages = () => toast.error('No hay una sesión activa')
 
-function InitButton({ init, setInit, setNow }) {
+function InitButton({ init, setInit, setNow}) {
   const session = useSessionStore((state) => state.session)
   return (
     <button
@@ -21,7 +21,7 @@ function InitButton({ init, setInit, setNow }) {
         setInit(true)
         setNow(Date.now())
       }}
-      disabled={init}
+      disabled={(init||session === null)}
     >
       Iniciar
     </button>

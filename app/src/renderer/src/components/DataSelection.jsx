@@ -1,4 +1,5 @@
 import Dialog from './Dialog'
+import { useSessionStore } from '../context/SessionContext'
 
 import { useSelectionStore } from '../context/SelectionContext'
 import { useState, useRef, useEffect } from 'react'
@@ -6,6 +7,7 @@ import constants from '../constants'
 const { Allgraph } = constants
 
 export function DataSelection() {
+  const session = useSessionStore((state) => state.session)
   // create a reference to the dialog
   const ref = useRef(null)
   // Get the current selections and the setSelection function from the store
@@ -49,11 +51,13 @@ export function DataSelection() {
         bg-[#e94926]
         rounded
         text-[#dee4ea]
-        hover:bg-[#ec6d2d]"
+        hover:bg-[#ec6d2d]
+        disabled:opacity-50"
         onClick={() => {
           // Show the dialog
           ref.current.showModal()
         }}
+        disabled={session===null}
       >
         Cambiar selecion
       </button>
