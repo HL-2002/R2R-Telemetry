@@ -21,10 +21,19 @@ const read = async (id) => {
   return result
 }
 
+const updateRunDuration = async (id, duration) => {
+  const result = await db.execute({
+    sql: `UPDATE run SET duration = ? WHERE id = ?`,
+    args: [duration, id]
+  })
+  return result
+}
+
 const runModel = {
   create,
   readALL,
-  read
+  read,
+  updateRunDuration
 }
 
 export default runModel
