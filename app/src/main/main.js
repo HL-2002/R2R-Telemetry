@@ -4,6 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import read from './reader.js'
 import sessionModel from './models/session.js'
+import runModel from './models/run.js'
 
 function createWindow() {
   // Create the browser window.
@@ -142,5 +143,33 @@ ipcMain.handle('CreateSession', async (event, sessionInfo) => {
     return { id: rs.lastInsertRowid, ...Session }
   } catch (e) {
     return { error: 'CedulaNotFound' }
+  }
+})
+
+ipcMain.handle('CreateRun', async (event, runInfo) => {
+  const Run = {
+    duration: 0,
+    session_id: runInfo.session_id
+  }
+
+  try {
+    const rs = await runModel.create(Run)
+    return { id: rs.lastInsertRowid, ...Run }
+  } catch (e) {
+    return { error: 'SessionNotFound' }
+  }
+})
+
+ipcMain.handle('UpdateRun', async (event, runInfo) => {
+  const Run = {
+    id: runInfo.id,
+    duration: runInfo.duration
+  }
+
+  try {
+    await runModel.updateRunDuration(Run.id, Run.duration)
+    return Run
+  } catch (e) {
+    return { error: 'RunNotFound' }
   }
 })
