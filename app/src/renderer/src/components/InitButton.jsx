@@ -1,5 +1,4 @@
 import { useSessionStore } from '../context/SessionContext'
-import toast from 'react-hot-toast'
 
 function InitButton({ init, setInit, setNow, selection }) {
   const session = useSessionStore((state) => state.session)
@@ -15,7 +14,7 @@ function InitButton({ init, setInit, setNow, selection }) {
         setInit(true)
         setNow(Date.now())
       }}
-      disabled={init || session === null || !selection.length > 0}
+      disabled={init || session === null || !(selection.length > 0)}
     >
       Iniciar
     </button>

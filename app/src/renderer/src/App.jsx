@@ -107,6 +107,7 @@ let performanceDistanceLabels = []
 let safetyTimeLabels = []
 let safetyDistanceLabels = []
 
+
 function App() {
   const session = useSessionStore((state) => state.session)
   const selection = useSelectionStore((state) => state.selections)
@@ -148,6 +149,7 @@ function App() {
         updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, performanceData)
         updateData(newData, safetyData)
+        setMode('log')
       }
     }
 
@@ -292,10 +294,10 @@ function App() {
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <SessionSelection />
         <DataSelection />
-        <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection} />
-        <PauseButton pause={pause} setPause={setPause} init={init} />
+        <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection}/>
+        <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate}/>
         <NewButton init={init} run={run} pause={pause} setRun={setRun} />
-        <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} />
+        <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} setMode={setMode} />
       </div>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>

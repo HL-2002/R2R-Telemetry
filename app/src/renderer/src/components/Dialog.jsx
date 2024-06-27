@@ -1,4 +1,21 @@
-export default function Dialog({ children, isOpen, someRef }) {
+export default function Dialog({ children, isOpen, someRef, notX }) {
+  if (notX) {
+    return (
+      <dialog
+        ref={someRef}
+        className="p-6 rounded 
+        m-auto
+        bg-[#22272b]
+        relative
+        pt-9
+        "
+        open={isOpen}
+      >
+        {children}
+      </dialog>
+    )
+  }
+
   return (
     <dialog
       ref={someRef}

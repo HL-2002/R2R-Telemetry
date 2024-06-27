@@ -1,4 +1,4 @@
-function PauseButton({ pause, setPause, init }) {
+function PauseButton({ pause, setPause, init, terminate }) {
   return (
     <button
       className="m-2 p-2
@@ -8,7 +8,7 @@ function PauseButton({ pause, setPause, init }) {
                 hover:bg-[#ec6d2d]
                 disabled:opacity-50"
       onClick={() => setPause(!pause)}
-      disabled={!init}
+      disabled={!init || terminate}
     >
       {pause ? 'Reanudar' : 'Pausar'}
     </button>
