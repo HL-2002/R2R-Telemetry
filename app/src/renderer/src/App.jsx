@@ -122,6 +122,18 @@ function App() {
   const [mode, setMode] = useState('')
   const [updateTime, setUpdateTime] = useState(Date.now())
 
+  // for runs
+  const [runDb, setRunDb] = useState(null)
+  const [time, setTime] = useState(null)
+
+  //read the code and you will understand what this does
+  useEffect(() => {
+    if (run == 0) return
+    const duration = Date.now() - time
+    api.UpdateRun({ id: runDb.id, duration: duration }).then((res) => {
+    })
+  }, [run])
+
   // Update data every frequency milliseconds
   useEffect(() => {
     // 1st data update at the beginning
@@ -209,6 +221,17 @@ function App() {
     // TODO: Change safetyEntries for the actual safety selection with the components
     setSafetySelection(safetyEntries)
   }, [session])
+
+
+  // this make something for the run xd documentation level god
+  useEffect(() => {
+    if (init == true) {
+      api.CreateRun({ session_id: session.id }).then((res) => {
+        setRunDb(res)
+        setTime(Date.now())
+      })
+    }
+  }, [init])
 
   // Data update and filter functions
   function updateData(newData, data) {
