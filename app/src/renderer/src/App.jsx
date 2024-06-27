@@ -99,8 +99,8 @@ function dataInit(dataSelection) {
 // WARNING: Must be outside the App component to avoid reinitialization
 let performanceData = dataInit(performanceEntries)
 let safetyData = dataInit(safetyEntries)
-let performanceSelectionData = {labels: [], datasets: []}
-let safetySelectionData = {labels: [], datasets: []}
+let performanceSelectionData = { labels: [], datasets: [] }
+let safetySelectionData = { labels: [], datasets: [] }
 
 let performanceTimeLabels = []
 let performanceDistanceLabels = []
@@ -119,7 +119,7 @@ function App() {
   const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
   // Mode depends on the session selected, new session logs, and existing session reads
-  const [mode, setMode] = useState('') 
+  const [mode, setMode] = useState('')
   const [updateTime, setUpdateTime] = useState(Date.now())
 
   // Update data every frequency milliseconds
@@ -202,14 +202,13 @@ function App() {
     setUpdateTime(Date.now())
   }, [run, selection, Axis])
 
-  // TODO: comment your things Luis
+  // TODO: comment your things Luis :D [eat my balls]
   useEffect(() => {
     const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
     setSelection(sele)
     // TODO: Change safetyEntries for the actual safety selection with the components
     setSafetySelection(safetyEntries)
   }, [session])
-
 
   // Data update and filter functions
   function updateData(newData, data) {
@@ -230,7 +229,7 @@ function App() {
     let time = Date.now() - now
     timeLabels.push(Math.floor(time / 1000)) // ms to seconds
 
-    let speed = newData['velocity'] * 1e3 / 3600 // km/h to m/s
+    let speed = (newData['velocity'] * 1e3) / 3600 // km/h to m/s
     let dt = frequency / 1000 // ms to seconds
     // distance as the Riemman sum of the speed times the interval of given speed
     if (distanceLabels.length === 0) {
@@ -270,7 +269,7 @@ function App() {
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <SessionSelection />
         <DataSelection />
-        <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection}/>
+        <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection} />
         <PauseButton pause={pause} setPause={setPause} init={init} />
         <NewButton init={init} run={run} pause={pause} setRun={setRun} />
         <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} />
