@@ -1,5 +1,3 @@
-import Versions from './components/Versions.jsx'
-import { Line } from 'react-chartjs-2'
 import { useEffect, useState } from 'react'
 
 // TODO: Need to import necessary modules for Chart.js only
@@ -249,7 +247,7 @@ function App() {
       return filteredData
     }
     else {
-      return data
+      return dataInit(selection)
     }
   }
 
@@ -270,7 +268,7 @@ function App() {
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <SessionSelection />
         <DataSelection />
-        <InitButton init={init} setInit={setInit} setNow={setNow} />
+        <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection}/>
         <PauseButton pause={pause} setPause={setPause} init={init} />
         <NewButton init={init} run={run} pause={pause} setRun={setRun} />
         <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} />
