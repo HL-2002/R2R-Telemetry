@@ -6,7 +6,9 @@ const api = {
   getAllSessions: () => ipcRenderer.invoke('getAllsessions'),
   getSession: (id) => ipcRenderer.invoke('getSession', id),
   deleteSession: (id) => ipcRenderer.send('deleteSession', id),
-  CreateSession: (sessionInfo) => ipcRenderer.invoke('CreateSession', sessionInfo)
+  CreateSession: (sessionInfo) => ipcRenderer.invoke('CreateSession', sessionInfo),
+  CreateRun: (runInfo) => ipcRenderer.invoke('CreateRun', runInfo),
+  UpdateRun: (runInfo) => ipcRenderer.invoke('UpdateRun', runInfo)
 }
 
 // Use `contextBridge` APIs to expose Electron APIs to
