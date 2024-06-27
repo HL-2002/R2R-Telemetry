@@ -99,7 +99,8 @@ function dataInit(dataSelection) {
 // WARNING: Must be outside the App component to avoid reinitialization
 let performanceData = dataInit(performanceEntries)
 let safetyData = dataInit(safetyEntries)
-let performanceSelection = dataInit(performanceEntries)
+let performanceSelectionData = dataInit(performanceEntries)
+let safetySelectionData = dataInit(safetyEntries)
 
 let performanceTimeLabels = []
 let performanceDistanceLabels = []
@@ -109,6 +110,7 @@ let safetyDistanceLabels = []
 function App() {
   const session = useSessionStore((state) => state.session)
   const selection = useSelectionStore((state) => state.selections)
+  const [safetySelection, setSafetySelection] = useState([])
   const setSelection = useSelectionStore((state) => state.setSelection)
   const Axis = useSelectionStore((state) => state.Axis)
   const [pause, setPause] = useState(false)
@@ -194,7 +196,8 @@ function App() {
       safetyData.labels = safetyDistanceLabels
     }
     // Filter data based on selection
-    performanceSelection = filterData(performanceData, selection)
+    performanceSelectionData = filterData(performanceData, selection)
+    safetySelectionData = filterData(safetyData, safetySelection)
     // Refresh component
     setUpdateTime(Date.now())
   }, [run, selection, Axis])
@@ -203,6 +206,8 @@ function App() {
   useEffect(() => {
     const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
     setSelection(sele)
+    // TODO: Change safetyEntries for the actual safety selection with the components
+    setSafetySelection(safetyEntries)
   }, [session])
 
 
@@ -236,19 +241,16 @@ function App() {
   }
 
   function filterData(data, selection) {
+    let filteredData = {
+      labels: data.labels,
+      datasets: []
+    }
+
     if (selection.length > 0) {
-      let filteredData = {
-        labels: data.labels,
-        datasets: []
-      }
-  
       filteredData.datasets = data.datasets.filter((dataset) => selection.includes(dataset.label))
-  
-      return filteredData
     }
-    else {
-      return dataInit(selection)
-    }
+
+    return filteredData
   }
 
   // Component
@@ -276,7 +278,7 @@ function App() {
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <RTCollection
-          data={performanceSelection}
+          data={performanceSelectionData}
           type="performance"
           axis={Axis}
           height={mainHeight}
@@ -284,7 +286,7 @@ function App() {
           notSafety={safetyEntries.length ? 0 : 1}
         />
         <RTCollection
-          data={safetyData}
+          data={safetySelectionData}
           type="safety"
           axis={Axis}
           height={mainHeight}
