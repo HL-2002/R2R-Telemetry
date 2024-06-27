@@ -92,6 +92,23 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
     // Set options for each plot
     let optionsSet = configInit(data, i, axis)
 
+    // Add 0 degrees line for steering_angle
+    if (data.datasets[i].label === 'steering_angle') {
+      optionsSet.plugins.annotation = {
+        annotations: {
+          line: {
+            drawTime: 'beforeDatasetsDraw',
+            type: 'line',
+            borderColor: 'white',
+            borderWidth: 1.5,
+            borderDash: [1, 0],
+            scaleID: 'y',
+            value: 0
+          }
+        }
+      }
+    }
+
     // Disable x-axis for all but the last plot
     if (i !== n - 1) {
       optionsSet.scales.x = { display: false }
@@ -156,7 +173,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
       </div>
     )
   } else {
-    return <div></div>
+    return <div style={{ width: 50 + 50 * notSafety + '%', height: height + 'vh' }}></div>
   }
 }
 
