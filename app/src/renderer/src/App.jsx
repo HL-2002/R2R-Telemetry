@@ -99,8 +99,8 @@ function dataInit(dataSelection) {
 // WARNING: Must be outside the App component to avoid reinitialization
 let performanceData = dataInit(performanceEntries)
 let safetyData = dataInit(safetyEntries)
-let performanceSelectionData = dataInit(performanceEntries)
-let safetySelectionData = dataInit(safetyEntries)
+let performanceSelectionData = {labels: [], datasets: []}
+let safetySelectionData = {labels: [], datasets: []}
 
 let performanceTimeLabels = []
 let performanceDistanceLabels = []
