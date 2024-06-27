@@ -118,6 +118,8 @@ function App() {
   const [now, setNow] = useState(0)
   const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
+  // Mode depends on the session selected, new session logs, and existing session reads
+  const [mode, setMode] = useState('') 
   const [updateTime, setUpdateTime] = useState(Date.now())
 
   // Update data every frequency milliseconds
@@ -267,29 +269,29 @@ function App() {
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <SessionSelection />
-        <DataSelection session={session}/>
-        <InitButton init={init} setInit={setInit} now={now} pause={pause} setNow={setNow} />
+        <DataSelection />
+        <InitButton init={init} setInit={setInit} setNow={setNow} />
         <PauseButton pause={pause} setPause={setPause} init={init} />
-        <NewButton init={init} run={run} pause={pause} setPause={setPause} setRun={setRun} />
+        <NewButton init={init} run={run} pause={pause} setRun={setRun} />
         <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} />
       </div>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <RTCollection
           data={performanceSelection}
+          type="performance"
+          axis={Axis}
           height={mainHeight}
           frequency={frequency}
           notSafety={safetyEntries.length ? 0 : 1}
-          axis={Axis}
-          type="performance"
         />
         <RTCollection
           data={safetyData}
+          type="safety"
+          axis={Axis}
           height={mainHeight}
           frequency={frequency}
           notSafety={0}
-          axis={Axis}
-          type="safety"
         />
       </div>
     </>
