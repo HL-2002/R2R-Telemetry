@@ -28,7 +28,7 @@ import { DataSelection } from './components/DataSelection.jsx'
 let sectionWidth = 30
 let mainWidth = 100 - sectionWidth
 let controlHeight = 15
-let mainHeight = 90 - controlHeight
+let mainHeight = 95 - controlHeight
 
 // Frequency of data update
 // NOTE: The lesser it is, the more precise the distance plot will be, but the more
@@ -86,9 +86,7 @@ function dataInit(dataSelection) {
     datasets: []
   }
 
-  let n = dataSelection.length
-
-  for (let i = 0; i < n; i++) {
+  for (let i = 0; i < dataSelection.length; i++) {
     data.datasets.push({
       sessionId: 0,
       label: dataSelection[i],
@@ -120,6 +118,7 @@ function App() {
   const [now, setNow] = useState(0)
   const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
+  const [updateTime, setUpdateTime] = useState(Date.now())
 
   // Update data every frequency milliseconds
   useEffect(() => {
@@ -161,8 +160,8 @@ function App() {
         } else {
           newData = await readAPI.readData()
         }
-        updateData(newData, safetyData)
         updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
+        updateData(newData, safetyData)
       }
     }, frequency)
 
@@ -184,8 +183,9 @@ function App() {
     }
   }, [run])
 
-  // Change axis upon selection
+  // Update data upon selection, axis change, and new run
   useEffect(() => {
+    // Set labels based on axis
     if (Axis === 'time') {
       performanceData.labels = performanceTimeLabels
       safetyData.labels = safetyTimeLabels
@@ -193,13 +193,11 @@ function App() {
       performanceData.labels = performanceDistanceLabels
       safetyData.labels = safetyDistanceLabels
     }
-  // NOTE: init is included to reload the component once there's a new run and init is set to true
-  },[init, Axis])
-
-  // Change selection
-  useEffect(() => {
+    // Filter data based on selection
     performanceSelection = filterData(performanceData, selection)
-  }, [selection])
+    // Refresh component
+    setUpdateTime(Date.now())
+  }, [run, selection, Axis])
 
   // TODO: comment your things Luis
   useEffect(() => {
@@ -207,9 +205,10 @@ function App() {
     setSelection(sele)
   }, [session])
 
+
+  // Data update and filter functions
   function updateData(newData, data) {
-    let n = data.datasets.length
-    for (let i = 0; i < n; i++) {
+    for (let i = 0; i < data.datasets.length; i++) {
       if (data.datasets[i].label === 'tire_pressure_fl') {
         data.datasets[i].data.push(newData['tire_pressure_fl'])
         data.datasets[i + 1].data.push(newData['tire_pressure_fr'])
@@ -225,6 +224,7 @@ function App() {
   function updateLabels(timeLabels, distanceLabels, newData) {
     let time = Date.now() - now
     timeLabels.push(Math.floor(time / 1000)) // ms to seconds
+
     let speed = newData['velocity'] * 1e3 / 3600 // km/h to m/s
     let dt = frequency / 1000 // ms to seconds
     // distance as the Riemman sum of the speed times the interval of given speed
@@ -236,14 +236,13 @@ function App() {
   }
 
   function filterData(data, selection) {
-    if (selection !== undefined) {
+    if (selection.length > 0) {
       let filteredData = {
         labels: data.labels,
         datasets: []
       }
   
       filteredData.datasets = data.datasets.filter((dataset) => selection.includes(dataset.label))
-      console.log(filteredData)
   
       return filteredData
     }
@@ -264,19 +263,11 @@ function App() {
       ) : (
         <h1>no hay session</h1>
       )}
-
-      {selection.length ? (
-        <h1>
-          la seleccion actual es: {selection} y el eje es: {Axis}
-        </h1>
-      ) : (
-        <h1>no hay seleccion</h1>
-      )}
       <h3> Intento Nro{run}</h3>
 
       <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
         <SessionSelection />
-        <DataSelection />
+        <DataSelection session={session}/>
         <InitButton init={init} setInit={setInit} now={now} pause={pause} setNow={setNow} />
         <PauseButton pause={pause} setPause={setPause} init={init} />
         <NewButton init={init} run={run} pause={pause} setPause={setPause} setRun={setRun} />
