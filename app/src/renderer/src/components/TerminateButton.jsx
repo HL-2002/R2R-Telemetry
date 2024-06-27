@@ -3,6 +3,7 @@ import Dialog from './Dialog'
 import toast from 'react-hot-toast'
 
 function TerminateButton({ terminate, setTerminate, init, setMode }) {
+  // Reference to open and show the dialog
   const ref = useRef(null)
 
   return (
@@ -27,7 +28,8 @@ function TerminateButton({ terminate, setTerminate, init, setMode }) {
       <h3 className='text-slate-50
                       text-center
                       font-bold'
-      > ¿Deseas terminar la sesión?
+      > 
+      ¿Deseas terminar la sesión?
       </h3>
 
       <p className='text-[#454f59]
