@@ -106,7 +106,6 @@ let performanceDistanceLabels = []
 let safetyTimeLabels = []
 let safetyDistanceLabels = []
 
-
 function App() {
   const session = useSessionStore((state) => state.session)
   const selection = useSelectionStore((state) => state.selections)
@@ -130,8 +129,7 @@ function App() {
   useEffect(() => {
     if (run == 0) return
     const duration = Date.now() - time
-    api.UpdateRun({ id: runDb.id, duration: duration }).then((res) => {
-    })
+    api.UpdateRun({ id: runDb.id, duration: duration }).then((res) => {})
   }, [run])
 
   // Update data every frequency milliseconds
@@ -223,7 +221,6 @@ function App() {
     setSafetySelection(safetyEntries)
   }, [session])
 
-
   // this make something for the run xd documentation level god
   useEffect(() => {
     if (init == true) {
@@ -280,48 +277,50 @@ function App() {
   return (
     <>
       <Toaster />
-      <div className='flex w-screen'>
-        <div id="SIDEBAR"
-            className='bg-[#1d2125]
+      <div className="flex w-screen">
+        <div
+          id="SIDEBAR"
+          className="bg-[#1d2125]
                         p-6
                         w-56
                         h-screen
                         text-center
                         flex
-                        flex-col'>
-          <img src="./src/assets/app-logo.png" 
-              alt="R2R Telemetría"
-              className='pb-2'/>
+                        flex-col"
+        >
+          <img src="./src/assets/app-logo.png" alt="R2R Telemetría" className="pb-2" />
           <SessionSelection />
-          <RunCollection mode={mode}/>
+          <RunCollection mode={mode} />
         </div>
-        
-        <div id="MAIN"
-            className='bg-[#161a1d]
+
+        <div
+          id="MAIN"
+          className="bg-[#161a1d]
                         p-6
                         flex-grow
-                        min-w-0'>
-          
-          
+                        min-w-0"
+        >
           {session != null ? (
-            <div id="CONTROL"
-              style={{height: controlHeight + 'vh'}}
-              className='mb-1'>
-              <h1 className='font-black'>
+            <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
+              <h1 className="font-black">
                 {session?.description} - {session?.type} : Intento Nro {run}
               </h1>
               <div className="flex">
                 <DataSelection />
-                <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection}/>
-                <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate}/>
+                <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection} />
+                <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate} />
                 <NewButton init={init} run={run} pause={pause} setRun={setRun} />
-                <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} setMode={setMode}/>
+                <TerminateButton
+                  terminate={terminate}
+                  setTerminate={setTerminate}
+                  init={init}
+                  setMode={setMode}
+                />
               </div>
             </div>
-            ) : (
-              <> </>
-            )}
-          
+          ) : (
+            <> </>
+          )}
 
           <div className="flex">
             <RTCollection
