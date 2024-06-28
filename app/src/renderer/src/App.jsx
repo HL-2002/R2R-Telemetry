@@ -127,7 +127,7 @@ function App() {
 
   //read the code and you will understand what this does
   useEffect(() => {
-    if (run == 0) return
+    if (runDb == null) return
     const duration = Date.now() - time
     api.UpdateRun({ id: runDb.id, duration: duration }).then((res) => {})
   }, [run])
@@ -180,7 +180,7 @@ function App() {
 
     // Clear interval when the component is unmounted
     return () => clearInterval(graphInterval)
-  }, [init, pause, terminate])
+  }, [init, pause, terminate, runDb])
 
   // Reset data upon new run when the component is reloaded
   useEffect(() => {
