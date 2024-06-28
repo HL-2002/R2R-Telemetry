@@ -3,8 +3,11 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import read from './reader.js'
+
+// imports models of db
 import sessionModel from './models/session.js'
 import runModel from './models/run.js'
+import entryModel from './models/entry.js'
 
 // Min size
 const winWidth = 900
@@ -111,8 +114,14 @@ async function initDataLog() {
 async function logData() {
   let entries = await read()
   // TODO: Do things with the data before sending it
-
+  // try {
+  // for  this we need to have the run id, where the entry  belongs
+  // how we can get the run id?
+  // await entryModel.create(entries)
   return entries
+  // } catch (e) {
+  // return { error: 'RunNotFound' }
+  // }
 }
 
 async function getAllsessions() {
