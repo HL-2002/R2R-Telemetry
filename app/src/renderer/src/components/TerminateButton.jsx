@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import Dialog from './Dialog'
 import toast from 'react-hot-toast'
 
-function TerminateButton({ terminate, setTerminate, init, setMode }) {
+function TerminateButton({ terminate, setTerminate, init, setMode}) {
   // Reference to open and show the dialog
   const ref = useRef(null)
 
@@ -19,7 +19,7 @@ function TerminateButton({ terminate, setTerminate, init, setMode }) {
         // Show the dialog
         ref.current.showModal()
       }}
-      disabled={!init || terminate}
+      disabled={terminate}
     >
       Terminar
     </button>

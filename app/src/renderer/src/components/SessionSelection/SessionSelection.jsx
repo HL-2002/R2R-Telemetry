@@ -12,19 +12,21 @@ export default function SessionSelection() {
     <>
       <button
         className="
-        m-2
+        mt-2
         p-2
+        mb-4
         bg-[#e94926]
-        rounded
+        rounded-lg
         text-[#dee4ea]
         hover:bg-[#ec6d2d]
         "
+        style={{ width: 100 + '%' }}
         onClick={() => {
           setPage(0)
           ref.current.showModal()
         }}
       >
-        Selecionar Sesion
+        Selecionar Sesión
       </button>
       <Dialog isOpen={false} someRef={ref}>
         {page === 0 ? <MenuPage changePage={setPage} /> : null}
