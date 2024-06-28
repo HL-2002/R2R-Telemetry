@@ -6,11 +6,15 @@ import read from './reader.js'
 import sessionModel from './models/session.js'
 import runModel from './models/run.js'
 
+// Min size
+const winWidth = 900
+const winHeight = 750
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width: winWidth,
+    height: winHeight,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -19,6 +23,8 @@ function createWindow() {
       sandbox: false
     }
   })
+
+  mainWindow.setMinimumSize(winWidth, winHeight)
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
