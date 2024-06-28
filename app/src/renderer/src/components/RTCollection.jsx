@@ -191,7 +191,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
         style={{ width: 50 + 50 * notSafety + '%', height: height + 'vh' }}
         className='pr-4'
       >
-        <h1>{title}</h1>
+        <h1 className='font-bold'>{title}</h1>
         {configList.map((config) => (
           // Height is divided by the number of plots, minus the space taken by the title
           <div

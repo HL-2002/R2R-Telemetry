@@ -13,8 +13,8 @@ export default function SessionSelection() {
       <button
         className="
         mt-2
-        mb-2
         p-2
+        mb-4
         bg-[#e94926]
         rounded-lg
         text-[#dee4ea]

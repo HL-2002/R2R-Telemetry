@@ -25,7 +25,7 @@ import { DataSelection } from './components/DataSelection.jsx'
 
 // Size variables (vh and vw)
 let controlHeight = 10
-let mainHeight = 96 - controlHeight
+let mainHeight = 95 - controlHeight
 
 // Frequency of data update
 // NOTE: The lesser it is, the more precise the distance plot will be, but the more
@@ -285,8 +285,13 @@ function App() {
             className='bg-[#1d2125]
                         p-6
                         w-56
-                        text-center'>
-          <img src="./src/assets/app-logo.png" alt="R2R Telemetría"/>
+                        h-screen
+                        text-center
+                        flex
+                        flex-col'>
+          <img src="./src/assets/app-logo.png" 
+              alt="R2R Telemetría"
+              className='pb-2'/>
           <SessionSelection />
           <RunCollection mode={mode}/>
         </div>
@@ -294,27 +299,29 @@ function App() {
         <div id="MAIN"
             className='bg-[#161a1d]
                         p-6
-                        flex-grow'>
+                        flex-grow
+                        min-w-0'>
           
-          <div id="CONTROL"
-              style={{height: controlHeight + 'vh'}}>
-            {session != null ? (
-              <h1>
+          
+          {session != null ? (
+            <div id="CONTROL"
+              style={{height: controlHeight + 'vh'}}
+              className='mb-1'>
+              <h1 className='font-black'>
                 {session?.description} - {session?.type} : Intento Nro {run}
-                
               </h1>
-            ) : (
-              <h1>No hay sesión</h1>
-            )}
-
-            <div className="flex">
-              <DataSelection />
-              <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection}/>
-              <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate}/>
-              <NewButton init={init} run={run} pause={pause} setRun={setRun} />
-              <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} setMode={setMode} />
+              <div className="flex">
+                <DataSelection />
+                <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection}/>
+                <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate}/>
+                <NewButton init={init} run={run} pause={pause} setRun={setRun} />
+                <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} setMode={setMode}/>
+              </div>
             </div>
-          </div>
+            ) : (
+              <> </>
+            )}
+          
 
           <div className="flex">
             <RTCollection
