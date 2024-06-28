@@ -189,6 +189,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
         key="RTCollection"
         // Width is adjusted based the existence of safety plots
         style={{ width: 50 + 50 * notSafety + '%', height: height + 'vh' }}
+        className='pr-4'
       >
         <h1>{title}</h1>
         {configList.map((config) => (
