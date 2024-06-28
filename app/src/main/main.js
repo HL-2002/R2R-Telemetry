@@ -111,17 +111,25 @@ async function initDataLog() {
 }
 
 // Reads and logs the data before returning it
-async function logData() {
+async function logData(event, args) {
   let entries = await read()
   // TODO: Do things with the data before sending it
-  // try {
-  // for  this we need to have the run id, where the entry  belongs
-  // how we can get the run id?
-  // await entryModel.create(entries)
-  return entries
-  // } catch (e) {
-  // return { error: 'RunNotFound' }
-  // }
+  try {
+    if (args.run_id) {
+      //  the args time, distance and acceleration, will be change make this henry xdd
+      await entryModel.create({
+        ...entries,
+        run_id: args.run_id,
+        time: 0,
+        distance: 0,
+        acceleration: 0
+      })
+    }
+    return entries
+  } catch (e) {
+    console.log(e)
+    return { error: 'RunNotFound' }
+  }
 }
 
 async function getAllsessions() {
