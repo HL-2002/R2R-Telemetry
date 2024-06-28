@@ -2,13 +2,27 @@ import { db } from '../db'
 
 const create = async (entry) => {
   const result = await db.execute({
-    sql: `INSERT INTO entry (velocity, rpms, gear, throttle, brake, lateral_g, 
+    sql: `
+  INSERT INTO entry (
+  velocity,
+  rpms,
+  gear,
+  throttle,
+  brake,
+  lateral_g, 
   tire_pressure_fr,
   tire_pressure_fl,
   tire_pressure_rr,
   tire_pressure_rl,
-    , steering_angle, fuel, temperature, oil_pressure, run_id
+  steering_angle, 
+  fuel, 
+  temperature, 
+  oil_pressure, 
+  run_id
     ) VALUES(
+    ?,
+    ?,
+    ?,
     ?,
     ?,
     ?,
