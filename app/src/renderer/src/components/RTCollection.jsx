@@ -79,6 +79,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
         // Generate labels for each dataset
         generateLabels: function (chart) {
           var data = chart.data;
+          // For each dataset, generate a label following the label interface
           var legends = data.datasets.map(function(dataset, i) {
             return {
               text: formatLabel(dataset.label),
@@ -95,7 +96,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
 
               // Below is extra data used for toggling the datasets
               datasetIndex: i
-            };
+            }
           }, this)
           return legends
         }
