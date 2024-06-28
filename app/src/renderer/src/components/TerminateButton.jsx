@@ -9,7 +9,7 @@ function TerminateButton({ terminate, setTerminate, init, setMode }) {
   return (
     <>
     <button
-      className="m-2 p-2
+      className="my-2 mr-4 p-2
                 bg-[#ea3344]
                 rounded
                 text-[#dee4ea]
@@ -32,7 +32,7 @@ function TerminateButton({ terminate, setTerminate, init, setMode }) {
       ¿Deseas terminar la sesión?
       </h3>
 
-      <p className='text-[#454f59]
+      <p className='text-[#596773]
                     text-center
                     p-4
                     m-auto

@@ -23,10 +23,10 @@ import { useSelectionStore } from './context/SelectionContext.js'
 import { DataSelection } from './components/DataSelection.jsx'
 
 // Size variables (vh and vw)
-let sectionWidth = 30
+let sectionWidth = 25
 let mainWidth = 100 - sectionWidth
-let controlHeight = 15
-let mainHeight = 95 - controlHeight
+let controlHeight = 10
+let mainHeight = 98.25 - controlHeight
 
 // Frequency of data update
 // NOTE: The lesser it is, the more precise the distance plot will be, but the more
@@ -281,43 +281,66 @@ function App() {
   return (
     <>
       <Toaster />
-      {session != null ? (
-        <h1>
-          la sesion actual activa es: {session?.description} con id {session?.id.toString()} y tipo{' '}
-          {session?.type}
-        </h1>
-      ) : (
-        <h1>no hay session</h1>
-      )}
-      <h3> Intento Nro{run}</h3>
-
-      <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
+      <div className='flex'>
+      <div id="SIDEBAR"
+           style={{width: sectionWidth + 'vw'}}
+           className='bg-[#1d2125]
+                      p-6
+                      text-center'>
+        <img src="./src/assets/app-logo.png" alt="R2R Telemetría" 
+             className=''/>
         <SessionSelection />
-        <DataSelection />
-        <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection}/>
-        <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate}/>
-        <NewButton init={init} run={run} pause={pause} setRun={setRun} />
-        <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} setMode={setMode} />
+      </div>
+      
+      <div id="MAIN"
+           style={{width: mainWidth + 'vw'}}
+           className='bg-[#161a1d]
+                      p-2'>
+        
+        <div id="CONTROL"
+             style={{height: controlHeight + 'vh'}}>
+          {session != null ? (
+            <h1>
+              {session?.description} - {session?.type} : Intento Nro{run}
+              
+            </h1>
+          ) : (
+            <h1>No hay sesión</h1>
+          )}
+
+          <div className="flex flex-row" style={{ width: mainWidth + 'vw'}}>
+            <DataSelection />
+            <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection}/>
+            <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate}/>
+            <NewButton init={init} run={run} pause={pause} setRun={setRun} />
+            <TerminateButton terminate={terminate} setTerminate={setTerminate} init={init} setMode={setMode} />
+          </div>
+        </div>
+
+        <div className="flex flex-row" style={{ width: mainWidth + 'vw'}}>
+          <RTCollection
+            data={performanceSelectionData}
+            type="performance"
+            axis={Axis}
+            height={mainHeight}
+            frequency={frequency}
+            notSafety={safetyEntries.length ? 0 : 1}
+          />
+          <RTCollection
+            data={safetySelectionData}
+            type="safety"
+            axis={Axis}
+            height={mainHeight}
+            frequency={frequency}
+            notSafety={0}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-row border-8" style={{ width: mainWidth + 'vw' }}>
-        <RTCollection
-          data={performanceSelectionData}
-          type="performance"
-          axis={Axis}
-          height={mainHeight}
-          frequency={frequency}
-          notSafety={safetyEntries.length ? 0 : 1}
-        />
-        <RTCollection
-          data={safetySelectionData}
-          type="safety"
-          axis={Axis}
-          height={mainHeight}
-          frequency={frequency}
-          notSafety={0}
-        />
       </div>
+      
+
+      
     </>
   )
 }

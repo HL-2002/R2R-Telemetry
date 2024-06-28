@@ -4,7 +4,7 @@ function InitButton({ init, setInit, setNow, selection }) {
   const session = useSessionStore((state) => state.session)
   return (
     <button
-      className="m-2 p-2
+      className="my-2 mr-4 p-2
                 bg-[#e94926]
                 rounded
                 text-[#dee4ea]

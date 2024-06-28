@@ -73,6 +73,35 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
       }
     }
 
+    // Change legend labels to tire pressure
+    optionsSet.plugins.legend = {
+      labels: {
+        // Generate labels for each dataset
+        generateLabels: function (chart) {
+          var data = chart.data;
+          var legends = data.datasets.map(function(dataset, i) {
+            return {
+              text: formatLabel(dataset.label),
+              fontColor: dataset.borderColor,
+              fillStyle: (!Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor : dataset.backgroundColor[0]),
+              hidden: !chart.isDatasetVisible(i),
+              lineCap: dataset.borderCapStyle,
+              lineDash: dataset.borderDash,
+              lineDashOffset: dataset.borderDashOffset,
+              lineJoin: dataset.borderJoinStyle,
+              lineWidth: dataset.borderWidth,
+              strokeStyle: dataset.borderColor,
+              pointStyle: dataset.pointStyle,
+
+              // Below is extra data used for toggling the datasets
+              datasetIndex: i
+            };
+          }, this)
+          return legends
+        }
+      }
+    }
+
     configList.push({ data: dataSet, options: optionsSet })
 
     t += 4
@@ -145,6 +174,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
     return () => clearInterval(interval)
   })
 
+
   // Map data to plots within a div
   // All is contained within a single div, so that their width can be adjusted together.
   // However, their height is adjusted individually based on the height of each plot's div.
@@ -156,7 +186,6 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
       <div
         id="RTCollection"
         key="RTCollection"
-        className="border-orange-400 border-2 p-2"
         // Width is adjusted based the existence of safety plots
         style={{ width: 50 + 50 * notSafety + '%', height: height + 'vh' }}
       >
@@ -180,6 +209,10 @@ function RTCollection({ data, type, axis, height, frequency, notSafety }) {
 function formatTitle(title) {
   title = title.replace('_fl', '')
   return title.replace('_', ' ').toUpperCase()
+}
+
+function formatLabel(label) {
+  return label.replace('tire_pressure_', '').toUpperCase()
 }
 
 function configInit(data, index, axis) {

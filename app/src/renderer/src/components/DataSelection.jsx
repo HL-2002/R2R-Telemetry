@@ -46,7 +46,7 @@ export function DataSelection() {
   return (
     <>
       <button
-        className=" m-2
+        className=" my-2 mr-4
         p-2
         bg-[#e94926]
         rounded
