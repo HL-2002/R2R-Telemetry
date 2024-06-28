@@ -73,6 +73,8 @@ db.execute(`CREATE TABLE IF NOT EXISTS entry (
   temperature REAL,
   oil_pressure REAL,
   run_id INTEGER,
+  time REAL,
+  distance REAL,
   FOREIGN KEY(run_id) REFERENCES run(id)
 )
   `)
