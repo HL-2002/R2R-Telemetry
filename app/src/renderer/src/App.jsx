@@ -170,7 +170,7 @@ function App() {
       if (init && !terminate) {
         let newData = {}
         if (!pause) {
-          newData = await readAPI.logData()
+          newData = await readAPI.logData({ run_id: runDb?.id })
           updateLabels(performanceTimeLabels, performanceDistanceLabels, newData)
           updateData(newData, performanceData)
         } else {
