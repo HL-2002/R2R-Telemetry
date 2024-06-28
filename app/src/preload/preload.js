@@ -20,7 +20,7 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('readAPI', {
       readData: () => ipcRenderer.invoke('read'),
-      logData: () => ipcRenderer.invoke('log'),
+      logData: (args) => ipcRenderer.invoke('log', args),
       initDataLog: () => ipcRenderer.invoke('init')
     })
   } catch (error) {
