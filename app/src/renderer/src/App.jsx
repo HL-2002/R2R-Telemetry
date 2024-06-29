@@ -118,6 +118,9 @@ function App() {
   const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
   // Mode (log, read) depends on the session selected, new session logs, and existing session reads
+  const setRunGlobal = useSessionStore((state) => state.setRuns)
+  const addRunGlobal = useSessionStore((state) => state.addRun)
+
   const [mode, setMode] = useState('')
   const [updateTime, setUpdateTime] = useState(Date.now())
 
@@ -125,11 +128,13 @@ function App() {
   const [runDb, setRunDb] = useState(null)
   const [time, setTime] = useState(null)
 
-  //read the code and you will understand what this does
+  //every time the run changes, update the duration in db
   useEffect(() => {
     if (runDb == null) return
     const duration = Date.now() - time
-    api.UpdateRun({ id: runDb.id, duration: duration }).then((res) => {})
+    api.UpdateRun({ id: runDb.id, duration: duration }).then((res) => {
+      addRunGlobal(res)
+    })
   }, [run])
 
   // Update data every frequency milliseconds
@@ -213,10 +218,17 @@ function App() {
     setUpdateTime(Date.now())
   }, [run, selection, Axis])
 
-  // TODO: comment your things Luis :D [eat my balls]
+  //every time the session changes
   useEffect(() => {
+    // Set the selection based on the session type
+    if(session == null) return
     const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
     setSelection(sele)
+
+    api.getRunBySession(session.id).then((res) => {
+      setRunGlobal(res)
+    })
+
     // TODO: Change safetyEntries for the actual safety selection with the components
     setSafetySelection(safetyEntries)
   }, [session])
