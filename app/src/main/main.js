@@ -193,6 +193,11 @@ ipcMain.handle('UpdateRun', async (event, runInfo) => {
     await runModel.updateRunDuration(Run.id, Run.duration)
     return Run
   } catch (e) {
+    console.log(e)
     return { error: 'RunNotFound' }
   }
+})
+
+ipcMain.handle('getRunBySession', async (event, session_id) => {
+  return (await runModel.getRunBySession(session_id)).rows
 })

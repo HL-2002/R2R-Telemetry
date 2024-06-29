@@ -29,11 +29,20 @@ const updateRunDuration = async (id, duration) => {
   return result
 }
 
+const getRunBySession = async (session_id) => {
+  const result = await db.execute({
+    sql: `SELECT * FROM run WHERE session_id = ?`,
+    args: [session_id]
+  })
+  return result
+}
+
 const runModel = {
   create,
   readALL,
   read,
-  updateRunDuration
+  updateRunDuration,
+  getRunBySession
 }
 
 export default runModel
