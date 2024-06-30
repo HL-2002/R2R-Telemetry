@@ -132,7 +132,7 @@ function App() {
   useEffect(() => {
     if (runDb == null) return
     const duration = Date.now() - time
-    api.UpdateRun({ id: runDb.id, duration: duration }).then((res) => {
+    api.UpdateRun({ id: runDb.id, duration: duration, hour: runDb.hour }).then((res) => {
       addRunGlobal(res)
     })
   }, [run])
@@ -221,7 +221,7 @@ function App() {
   //every time the session changes
   useEffect(() => {
     // Set the selection based on the session type
-    if(session == null) return
+    if (session == null) return
     const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
     setSelection(sele)
 
