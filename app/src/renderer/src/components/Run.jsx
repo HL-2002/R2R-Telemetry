@@ -1,6 +1,9 @@
 export default function Run({ mode, index, run }) {
-//   run have a atribute duration xd use it
-    return (
+  const min = Math.floor(run?.duration / 60000)
+  const sec = Math.floor((run?.duration % 60000) / 1000)
+  const ms = Math.floor(run?.duration % 1000)
+  console.log({ run })
+  return (
     <button
       className="m-1 p-2
                         bg-[#e94926]
@@ -16,8 +19,10 @@ export default function Run({ mode, index, run }) {
     >
       <h1 className="text-left">Run {index}#</h1>
       <div className="flex justify-between">
-        <p className="text-sm"> HH:MM </p>
-        <p className="text-sm"> MM:SS:MSS </p>
+        <p className="text-sm">{run?.hour}</p>
+        <p className="text-sm">
+          {`${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}:${ms.toString().padStart(2, '0')}`}
+        </p>
       </div>
     </button>
   )
