@@ -5,8 +5,8 @@ const create = async (run) => {
   // duracion
   // id_sesion
   const result = await db.execute({
-    sql: `INSERT INTO run (duration, session_id) VALUES(?, ?)`,
-    args: [run.duration, run.session_id]
+    sql: `INSERT INTO run (duration, session_id,hour) VALUES(?, ?,?)`,
+    args: [run.duration, run.session_id, run.hour]
   })
   return result
 }
