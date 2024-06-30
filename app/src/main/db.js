@@ -52,6 +52,7 @@ db.execute(`CREATE TABLE IF NOT EXISTS run (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   duration INTEGER,
   session_id INTEGER,
+  hour TEXT,
   FOREIGN KEY(session_id) REFERENCES session(id)
 )`)
 
