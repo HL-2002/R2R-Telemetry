@@ -170,8 +170,15 @@ ipcMain.handle('CreateSession', async (event, sessionInfo) => {
 })
 
 ipcMain.handle('CreateRun', async (event, runInfo) => {
+  // hour format: 'HH:MM'
+  const currentTime = new Date()
+  const hours = currentTime.getHours().toString().padStart(2, '0')
+  const minutes = currentTime.getMinutes().toString().padStart(2, '0')
+  const hour = `${hours}:${minutes}`
+
   const Run = {
     duration: 0,
+    hour,
     session_id: runInfo.session_id
   }
 
@@ -186,7 +193,8 @@ ipcMain.handle('CreateRun', async (event, runInfo) => {
 ipcMain.handle('UpdateRun', async (event, runInfo) => {
   const Run = {
     id: runInfo.id,
-    duration: runInfo.duration
+    duration: runInfo.duration,
+    hour: runInfo.hour,
   }
 
   try {
