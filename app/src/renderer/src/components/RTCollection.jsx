@@ -1,6 +1,7 @@
 // Collection of plots, so that their size can be adjusted together
 import { useState, useEffect } from 'react'
 import { Line } from 'react-chartjs-2'
+// TODO: Need to import necessary modules for Chart.js only
 import { Chart } from 'chart.js/auto'
 import annotationPlugin from 'chartjs-plugin-annotation'
 

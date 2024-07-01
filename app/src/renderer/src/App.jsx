@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react'
 
-// TODO: Need to import necessary modules for Chart.js only
-import Chart from 'chart.js/auto'
 // For notifications
 import { Toaster } from 'react-hot-toast'
 
