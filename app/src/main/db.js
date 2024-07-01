@@ -63,7 +63,6 @@ db.execute(`CREATE TABLE IF NOT EXISTS entry (
   rpms INTEGER,
   gear INTEGER,
   throttle REAL,
-  acceleration REAL,
   brake REAL,
   lateral_g REAL,
   tire_pressure_fr REAL,

@@ -121,8 +121,7 @@ async function logData(event, args) {
         ...entries,
         run_id: args.run_id,
         time: 0,
-        distance: 0,
-        acceleration: 0
+        distance: 0
       })
     }
     return entries

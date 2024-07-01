@@ -19,11 +19,9 @@ const create = async (entry) => {
   temperature, 
   oil_pressure, 
   run_id,
-  acceleration,
   time,
   distance
     ) VALUES(
-    ?,
     ?,
     ?,
     ?,
@@ -58,7 +56,6 @@ const create = async (entry) => {
       entry.temperature,
       entry.oil_pressure,
       entry.run_id,
-      entry.acceleration,
       entry.time,
       entry.distance
     ]
