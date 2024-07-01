@@ -96,6 +96,14 @@ function dataInit(dataSelection) {
 
 // Data initialization based on selection
 // WARNING: Must be outside the App component to avoid reinitialization
+/*
+  The idea is to have two data collections that are updated in real-time, one for performance
+  and one for safety. The data is updated every frequency milliseconds, and the data is filtered
+  based on the selection made by the user. 
+
+  The filtered data is then displayed in the RTCollection component, which is updated every time
+  the selection changes, the axis changes, or a new run is started.
+*/
 let performanceData = dataInit(performanceEntries)
 let safetyData = dataInit(safetyEntries)
 let performanceSelectionData = { labels: [], datasets: [] }
@@ -128,16 +136,53 @@ function App() {
   const [runDb, setRunDb] = useState(null)
   const [time, setTime] = useState(null)
 
-  //every time the run changes, update the duration in db
+  // Set the selection based on session type
   useEffect(() => {
-    if (runDb == null) return
-    const duration = Date.now() - time
-    api.UpdateRun({ id: runDb.id, duration: duration, hour: runDb.hour }).then((res) => {
-      addRunGlobal(res)
-    })
-  }, [run])
+    if (session == null) return
+    const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
+    setSelection(sele)
+    // TODO: Change safetyEntries for the actual safety selection with the components
+    setSafetySelection(safetyEntries)
 
-  // Update data every frequency milliseconds
+    api.getRunBySession(session.id).then((res) => {
+      setRunGlobal(res)
+    })
+  }, [session])
+
+  // Update data labels upon selection, axis change, and new run
+  /* 
+    NOTE: Even though is not as efficient to update the x labels whenever a data selection 
+    changes, or the other way around; separating label change and data filter based on selection,
+    updates the x labels, but doesn't update the plot's x axis, as both selectionData 
+    (the filtered data the plots use) don't have the chance to be updated until selection changes.
+  */
+  useEffect(() => {
+    // Set labels based on axis
+    if (Axis === 'time') {
+      performanceData.labels = performanceTimeLabels
+      safetyData.labels = safetyTimeLabels
+    } else if (Axis === 'distance') {
+      performanceData.labels = performanceDistanceLabels
+      safetyData.labels = safetyDistanceLabels
+    }
+
+    performanceSelectionData = filterData(performanceData, selection)
+    safetySelectionData = filterData(safetyData, safetySelection)
+    // Refresh component
+    setUpdateTime(Date.now())
+  }, [run, selection, safetySelection, Axis])
+
+  // Create a new run in the database upon initialization
+  useEffect(() => {
+    if (init == true) {
+      api.CreateRun({ session_id: session.id }).then((res) => {
+        setRunDb(res)
+        setTime(Date.now())
+      })
+    }
+  }, [init])
+
+  // Update data every frequency milliseconds based on variables current state
   useEffect(() => {
     // 1st data update at the beginning
     /* 
@@ -180,7 +225,7 @@ function App() {
         }
         updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, safetyData)
-      }
+        }
     }, frequency)
 
     // Clear interval when the component is unmounted
@@ -201,47 +246,14 @@ function App() {
     }
   }, [run])
 
-  // Update data upon selection, axis change, and new run
+  // Every time the run changes, update the duration in db
   useEffect(() => {
-    // Set labels based on axis
-    if (Axis === 'time') {
-      performanceData.labels = performanceTimeLabels
-      safetyData.labels = safetyTimeLabels
-    } else if (Axis === 'distance') {
-      performanceData.labels = performanceDistanceLabels
-      safetyData.labels = safetyDistanceLabels
-    }
-    // Filter data based on selection
-    performanceSelectionData = filterData(performanceData, selection)
-    safetySelectionData = filterData(safetyData, safetySelection)
-    // Refresh component
-    setUpdateTime(Date.now())
-  }, [run, selection, Axis])
-
-  //every time the session changes
-  useEffect(() => {
-    // Set the selection based on the session type
-    if (session == null) return
-    const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
-    setSelection(sele)
-
-    api.getRunBySession(session.id).then((res) => {
-      setRunGlobal(res)
+    if (runDb == null) return
+    const duration = Date.now() - time
+    api.UpdateRun({ id: runDb.id, duration: duration, hour: runDb.hour }).then((res) => {
+      addRunGlobal(res)
     })
-
-    // TODO: Change safetyEntries for the actual safety selection with the components
-    setSafetySelection(safetyEntries)
-  }, [session])
-
-  // this make something for the run xd documentation level god
-  useEffect(() => {
-    if (init == true) {
-      api.CreateRun({ session_id: session.id }).then((res) => {
-        setRunDb(res)
-        setTime(Date.now())
-      })
-    }
-  }, [init])
+  }, [run])
 
   // Data update and filter functions
   function updateData(newData, data) {
