@@ -135,7 +135,7 @@ function App() {
     api.UpdateRun({ id: runDb.id, duration: duration, hour: runDb.hour }).then((res) => {
       addRunGlobal(res)
     })
-  }, [run])
+  }, [run,terminate])
 
   // Update data every frequency milliseconds
   useEffect(() => {
