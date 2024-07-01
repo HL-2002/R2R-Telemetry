@@ -147,6 +147,7 @@ function App() {
     api.getRunBySession(session.id).then((res) => {
       setRunGlobal(res)
     })
+    setRun(0)
   }, [session])
 
   // Update data labels upon selection, axis change, and new run
@@ -172,6 +173,16 @@ function App() {
     setUpdateTime(Date.now())
   }, [run, selection, safetySelection, Axis])
 
+  // Every time the run changes, update the duration in db
+  useEffect(() => {
+    if (runDb == null) return
+    const duration = Date.now() - time
+    api.UpdateRun({ id: runDb.id, duration: duration, hour: runDb.hour }).then((res) => {
+      addRunGlobal(res)
+      // clean runDb for preventing multiple updates
+      setRunDb(null)
+    })
+  }, [run])
   // Create a new run in the database upon initialization
   useEffect(() => {
     if (init == true) {
@@ -225,7 +236,7 @@ function App() {
         }
         updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, safetyData)
-        }
+      }
     }, frequency)
 
     // Clear interval when the component is unmounted
@@ -244,15 +255,6 @@ function App() {
       safetyTimeLabels = []
       safetyDistanceLabels = []
     }
-  }, [run])
-
-  // Every time the run changes, update the duration in db
-  useEffect(() => {
-    if (runDb == null) return
-    const duration = Date.now() - time
-    api.UpdateRun({ id: runDb.id, duration: duration, hour: runDb.hour }).then((res) => {
-      addRunGlobal(res)
-    })
   }, [run])
 
   // Data update and filter functions
