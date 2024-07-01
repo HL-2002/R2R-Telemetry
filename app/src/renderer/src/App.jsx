@@ -317,7 +317,7 @@ function App() {
                           flex-col"
           >
             <img src="./src/assets/app-logo.png" alt="R2R Telemetría" className="pb-2" />
-            <SessionSelection setMode={setMode} mode={mode} terminate={terminate} />
+            <SessionSelection setMode={setMode} mode={mode} terminate={terminate} init={init} />
             <RunCollection mode={mode} />
           </div>
 
@@ -390,7 +390,7 @@ function App() {
                           flex-col"
           >
             <img src="./src/assets/app-logo.png" alt="R2R Telemetría" className="pb-2" />
-            <SessionSelection setMode={setMode} mode={mode} terminate={terminate} />
+            <SessionSelection setMode={setMode} mode={mode} terminate={terminate} init={init} />
             <RunCollection mode={mode} />
           </div>
 
@@ -454,7 +454,7 @@ function App() {
                           flex-col"
           >
             <img src="./src/assets/app-logo.png" alt="R2R Telemetría" className="pb-2" />
-            <SessionSelection setMode={setMode} mode={mode} terminate={terminate} />
+            <SessionSelection setMode={setMode} mode={mode} terminate={terminate} init={init} />
             <RunCollection mode={mode} />
           </div>
 

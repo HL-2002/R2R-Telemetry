@@ -4,7 +4,7 @@ import { MenuPage } from './MenuPage'
 import { LoadSession } from './Loadsession'
 import { NewSession } from './NewSession'
 
-export default function SessionSelection({ setMode, mode, terminate }) {
+export default function SessionSelection({ setMode, mode, terminate, init }) {
   const [page, setPage] = useState(0)
   const ref = useRef()
 
@@ -22,7 +22,7 @@ export default function SessionSelection({ setMode, mode, terminate }) {
         disabled:opacity-50
         "
         style={{ width: 100 + '%' }}
-        disabled={mode === 'log' && !terminate}
+        disabled={mode === 'log' && !terminate && init}
         onClick={() => {
           setPage(0)
           ref.current.showModal()
