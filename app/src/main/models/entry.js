@@ -76,10 +76,16 @@ const read = async (id) => {
   return result
 }
 
+const getEntryByRunId = async (run_id) => {
+  const result = await db.execute({ sql: `SELECT * FROM entry WHERE run_id = ?`, args: [run_id] })
+  return result
+}
+
 const entryModel = {
   create,
   readALL,
-  read
+  read,
+  getEntryByRunId
 }
 
 export default entryModel
