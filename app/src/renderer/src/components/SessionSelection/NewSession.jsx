@@ -6,7 +6,7 @@ import constants from '../../constants'
 
 const { TypesEvents } = constants
 
-export function NewSession() {
+export function NewSession({ setMode }) {
   const [selected, setSelected] = useState('')
   const setSession = useSessionStore((state) => state.setSession)
 
@@ -32,6 +32,7 @@ export function NewSession() {
     }
     toast.success('Sesion creada con exito')
     setSession(session)
+    setMode('log')
   }
 
   return (

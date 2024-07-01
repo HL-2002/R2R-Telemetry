@@ -125,7 +125,7 @@ function App() {
   const [now, setNow] = useState(0)
   const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
-  // Mode (log, read) depends on the session selected, new session logs, and existing session reads
+  // Mode (log, read) depends on the app option, new session logs, and existing session reads
   const setRunGlobal = useSessionStore((state) => state.setRuns)
   const addRunGlobal = useSessionStore((state) => state.addRun)
 
@@ -255,7 +255,7 @@ function App() {
       safetyTimeLabels = []
       safetyDistanceLabels = []
     }
-  }, [run])
+  }, [run, mode])
 
   // Data update and filter functions
   function updateData(newData, data) {
@@ -299,77 +299,179 @@ function App() {
     return filteredData
   }
 
-  // Component
-  return (
-    <>
-      <Toaster />
-      <div className="flex w-screen">
-        <div
-          id="SIDEBAR"
-          className="bg-[#1d2125]
-                        p-6
-                        w-56
-                        h-screen
-                        text-center
-                        flex
-                        flex-col"
-        >
-          <img src="./src/assets/app-logo.png" alt="R2R Telemetría" className="pb-2" />
-          <SessionSelection />
-          <RunCollection mode={mode} />
-        </div>
+  // App layout
+  // Log mode
+  if (mode === 'log') {
+    return (
+      <>
+        <Toaster />
+        <div className="flex w-screen">
+          <div
+            id="SIDEBAR"
+            className="bg-[#1d2125]
+                          p-6
+                          w-56
+                          h-screen
+                          text-center
+                          flex
+                          flex-col"
+          >
+            <img src="./src/assets/app-logo.png" alt="R2R Telemetría" className="pb-2" />
+            <SessionSelection setMode={setMode} mode={mode} terminate={terminate} />
+            <RunCollection mode={mode} />
+          </div>
 
-        <div
-          id="MAIN"
-          className="bg-[#161a1d]
-                        p-6
-                        flex-grow
-                        min-w-0"
-        >
-          {session != null ? (
-            <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
-              <h1 className="font-black">
-                {session?.description} - {session?.type} : Intento Nro {run}
-              </h1>
-              <div className="flex">
-                <DataSelection />
-                <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection} />
-                <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate} />
-                <NewButton init={init} run={run} pause={pause} setRun={setRun} />
-                <TerminateButton
-                  terminate={terminate}
-                  setTerminate={setTerminate}
-                  init={init}
-                  setMode={setMode}
-                />
+          <div
+            id="MAIN"
+            className="bg-[#161a1d]
+                          p-6
+                          flex-grow
+                          min-w-0"
+          >
+            {session != null ? (
+              <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
+                <h1 className="font-black">
+                  {session?.description} - {session?.type} : Intento Nro {run}
+                </h1>
+                <div className="flex">
+                  <DataSelection />
+                  <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection} />
+                  <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate} />
+                  <NewButton init={init} run={run} pause={pause} setRun={setRun} />
+                  <TerminateButton
+                    terminate={terminate}
+                    setTerminate={setTerminate}
+                    init={init}
+                    setMode={setMode}
+                  />
+                </div>
               </div>
-            </div>
-          ) : (
-            <> </>
-          )}
+            ) : (
+              <> </>
+            )}
 
-          <div className="flex">
-            <RTCollection
-              data={performanceSelectionData}
-              type="performance"
-              axis={Axis}
-              height={mainHeight}
-              frequency={frequency}
-              notSafety={safetyEntries.length ? 0 : 1}
-            />
-            <RTCollection
-              data={safetySelectionData}
-              type="safety"
-              axis={Axis}
-              height={mainHeight}
-              frequency={frequency}
-              notSafety={0}
-            />
+            <div className="flex">
+              <RTCollection
+                data={performanceSelectionData}
+                type="performance"
+                axis={Axis}
+                height={mainHeight}
+                frequency={frequency}
+                notSafety={safetyEntries.length ? 0 : 1}
+              />
+              <RTCollection
+                data={safetySelectionData}
+                type="safety"
+                axis={Axis}
+                height={mainHeight}
+                frequency={frequency}
+                notSafety={0}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </>
-  )
+      </>
+    )
+  }
+  // Read mode
+  else if (mode === 'read') {
+    return (
+      <>
+        <Toaster />
+        <div className="flex w-screen">
+          <div
+            id="SIDEBAR"
+            className="bg-[#1d2125]
+                          p-6
+                          w-56
+                          h-screen
+                          text-center
+                          flex
+                          flex-col"
+          >
+            <img src="./src/assets/app-logo.png" alt="R2R Telemetría" className="pb-2" />
+            <SessionSelection setMode={setMode} mode={mode} terminate={terminate} />
+            <RunCollection mode={mode} />
+          </div>
+
+          <div
+            id="MAIN"
+            className="bg-[#161a1d]
+                          p-6
+                          flex-grow
+                          min-w-0"
+          >
+            {session != null ? (
+              <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
+                <h1 className="font-black">
+                  {session?.description} - {session?.type} : Intento Nro {run}
+                </h1>
+                <div className="flex">
+                  <DataSelection />
+                </div>
+              </div>
+            ) : (
+              <> </>
+            )}
+
+            <div className="flex">
+              <RTCollection
+                data={performanceSelectionData}
+                type="performance"
+                axis={Axis}
+                height={mainHeight}
+                frequency={frequency}
+                notSafety={safetyEntries.length ? 0 : 1}
+              />
+              <RTCollection
+                data={safetySelectionData}
+                type="safety"
+                axis={Axis}
+                height={mainHeight}
+                frequency={frequency}
+                notSafety={0}
+              />
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
+  // Default
+  else {
+    return (
+      <>
+        <Toaster />
+        <div className="flex w-screen">
+          <div
+            id="SIDEBAR"
+            className="bg-[#1d2125]
+                          p-6
+                          w-56
+                          h-screen
+                          text-center
+                          flex
+                          flex-col"
+          >
+            <img src="./src/assets/app-logo.png" alt="R2R Telemetría" className="pb-2" />
+            <SessionSelection setMode={setMode} mode={mode} terminate={terminate} />
+            <RunCollection mode={mode} />
+          </div>
+
+          <div
+            id="MAIN"
+            className="bg-[#161a1d]
+                          p-6
+                          flex-grow
+                          min-w-0"
+          >
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  
 }
 
 export default App

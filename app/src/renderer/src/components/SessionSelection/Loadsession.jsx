@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSessionStore } from '../../context/SessionContext'
 
-export function LoadSession({ multiple = false, toDelete = false }) {
+export function LoadSession({ multiple = false, toDelete = false, setMode }) {
   const setSession = useSessionStore((state) => state.setSession)
   const [data, setData] = useState([])
   const [selected, setSelected] = useState([])
@@ -37,6 +37,7 @@ export function LoadSession({ multiple = false, toDelete = false }) {
 
     if (!multiple && !toDelete) {
       setSession(data.find((item) => item.id === selected[0]))
+      setMode('read')
     }
   }
 

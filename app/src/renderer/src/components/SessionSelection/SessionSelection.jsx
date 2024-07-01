@@ -4,7 +4,7 @@ import { MenuPage } from './MenuPage'
 import { LoadSession } from './Loadsession'
 import { NewSession } from './NewSession'
 
-export default function SessionSelection() {
+export default function SessionSelection({ setMode, mode, terminate }) {
   const [page, setPage] = useState(0)
   const ref = useRef()
 
@@ -19,8 +19,10 @@ export default function SessionSelection() {
         rounded-lg
         text-[#dee4ea]
         hover:bg-[#ec6d2d]
+        disabled:opacity-50
         "
         style={{ width: 100 + '%' }}
+        disabled={mode === 'log' && !terminate}
         onClick={() => {
           setPage(0)
           ref.current.showModal()
@@ -30,8 +32,8 @@ export default function SessionSelection() {
       </button>
       <Dialog isOpen={false} someRef={ref}>
         {page === 0 ? <MenuPage changePage={setPage} /> : null}
-        {page === 1 ? <NewSession /> : null}
-        {page === 2 ? <LoadSession /> : null}
+        {page === 1 ? <NewSession setMode={setMode}/> : null}
+        {page === 2 ? <LoadSession setMode={setMode}/> : null}
         {page === 3 ? <LoadSession multiple /> : null}
         {page === 4 ? <LoadSession toDelete /> : null}
       </Dialog>
