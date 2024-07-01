@@ -2,7 +2,6 @@ export default function Run({ mode, index, run }) {
   const min = Math.floor(run?.duration / 60000)
   const sec = Math.floor((run?.duration % 60000) / 1000)
   const ms = Math.floor(run?.duration % 1000)
-  console.log({ run })
   return (
     <button
       className="m-1 p-2
@@ -17,7 +16,7 @@ export default function Run({ mode, index, run }) {
       onClick={() => {}}
       disabled={mode !== 'read'}
     >
-      <h1 className="text-left">Run {index}#</h1>
+      <h1 className="text-left">Intento {index+1}</h1>
       <div className="flex justify-between">
         <p className="text-sm">{run?.hour}</p>
         <p className="text-sm">
