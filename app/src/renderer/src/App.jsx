@@ -132,10 +132,16 @@ function App() {
   // for runs
   const [runDb, setRunDb] = useState(null)
   const [time, setTime] = useState(null)
+  const entries = useSessionStore((state) => state.Entry)
 
   // TEST
   window.mode = mode
   window.terminate = terminate
+
+  useEffect(()=>{
+    console.log(entries)
+  },[entries])
+
 
   // Set the selection based on session type
   useEffect(() => {
@@ -187,7 +193,7 @@ function App() {
     })
   }, [run, terminate])
 
-  // Create a new run in the database upon initialization
+  // Create a new run in th>e database upon initialization
   useEffect(() => {
     if (init == true) {
       api.CreateRun({ session_id: session.id }).then((res) => {
