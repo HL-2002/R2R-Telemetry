@@ -40,5 +40,3 @@ export default function SessionSelection({ setMode, mode, terminate, init }) {
     </>
   )
 }
-
-// const Allgraph = ['velocity', 'rpms', 'gear', 'lateral_g', 'throttle', 'brake', 'steering_angle']
