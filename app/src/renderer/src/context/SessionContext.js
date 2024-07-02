@@ -11,9 +11,11 @@ import { create } from 'zustand'
 const useSessionStore = create((set) => ({
   session: null,
   Runs: [],
+  Entry: null,
   setSession: (session) => set({ session }),
   setRuns: (Runs) => set({ Runs }),
-  addRun: (run) => set((state) => ({ Runs: [...state.Runs, run] }))
+  addRun: (run) => set((state) => ({ Runs: [...state.Runs, run] })),
+  setEntry: (Entry) => set({ Entry })
 }))
 
 export { useSessionStore }
