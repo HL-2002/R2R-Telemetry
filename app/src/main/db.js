@@ -5,6 +5,7 @@ export const db = createClient({
 })
 
 // FOR SUICIDED
+db.execute('pragma foreign_keys = ON')
 
 // create table client
 db.execute(`CREATE TABLE IF NOT EXISTS client (
@@ -32,7 +33,7 @@ db.execute(`CREATE TABLE IF NOT EXISTS bill (
   id_tax INTEGER,
   id_session INTEGER,
   FOREIGN KEY(id_tax) REFERENCES tax(id),
-  FOREIGN KEY(id_session) REFERENCES session(id)
+  FOREIGN KEY(id_session) REFERENCES session(id) ON DELETE CASCADE
 )`)
 
 // FOR R2R
@@ -43,7 +44,7 @@ db.execute(`CREATE TABLE IF NOT EXISTS session (
   date TEXT,
   time TEXT,
   client_id INTEGER,
-  FOREIGN KEY(client_id) REFERENCES client(cedula)
+  FOREIGN KEY(client_id) REFERENCES client(cedula) ON DELETE CASCADE
 )`)
 
 // create table run
@@ -53,7 +54,7 @@ db.execute(`CREATE TABLE IF NOT EXISTS run (
   duration INTEGER,
   session_id INTEGER,
   hour TEXT,
-  FOREIGN KEY(session_id) REFERENCES session(id)
+  FOREIGN KEY(session_id) REFERENCES session(id) ON DELETE CASCADE
 )`)
 
 // create entry
@@ -76,6 +77,6 @@ db.execute(`CREATE TABLE IF NOT EXISTS entry (
   run_id INTEGER,
   time REAL,
   distance REAL,
-  FOREIGN KEY(run_id) REFERENCES run(id)
+  FOREIGN KEY(run_id) REFERENCES run(id) ON DELETE CASCADE
 )
   `)
