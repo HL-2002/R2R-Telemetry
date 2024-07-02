@@ -1,7 +1,16 @@
+import { useSessionStore } from "../context/SessionContext"
+
 export default function Run({ mode, index, run }) {
+  const setEntry = useSessionStore((state) => state.setEntry)
   const min = Math.floor(run?.duration / 60000)
   const sec = Math.floor((run?.duration % 60000) / 1000)
   const ms = Math.floor(run?.duration % 1000)
+
+  const handleClick = async () => {
+    const entries = await api.getEntryByRun(run.id)
+    setEntry(entries)
+  }
+
   return (
     <button
       className="m-1 p-2
@@ -13,10 +22,10 @@ export default function Run({ mode, index, run }) {
                         hover:bg-[#ec6d2d]
                         disabled:opacity-50"
       style={{ width: 95 + '%' }}
-      onClick={() => {}}
+      onClick={handleClick}
       disabled={mode === 'log'}
     >
-      <h1 className="text-left">Intento {index+1}</h1>
+      <h1 className="text-left">Intento {index + 1}</h1>
       <div className="flex justify-between">
         <p className="text-sm">{run?.hour}</p>
         <p className="text-sm">
