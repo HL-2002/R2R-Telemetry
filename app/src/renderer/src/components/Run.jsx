@@ -6,6 +6,7 @@ export default function Run({ mode, index, run }) {
   const sec = Math.floor((run?.duration % 60000) / 1000)
   const ms = Math.floor(run?.duration % 1000)
 
+  // this function gets the entries for the run
   const handleClick = async () => {
     const entries = await api.getEntryByRun(run.id)
     setEntry(entries)
