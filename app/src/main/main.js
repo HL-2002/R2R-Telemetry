@@ -112,7 +112,7 @@ async function logData(event, args) {
       //  the args time, distance and acceleration, will be change make this henry xdd
       await entryModel.create({
         ...entries,
-        run_id: args.run_id,
+        run_id: args.run_id
       })
     }
     return entries
@@ -195,7 +195,7 @@ ipcMain.handle('UpdateRun', async (event, runInfo) => {
   const Run = {
     id: runInfo.id,
     duration: runInfo.duration,
-    hour: runInfo.hour,
+    hour: runInfo.hour
   }
 
   try {
@@ -209,4 +209,8 @@ ipcMain.handle('UpdateRun', async (event, runInfo) => {
 
 ipcMain.handle('getRunBySession', async (event, session_id) => {
   return (await runModel.getRunBySession(session_id)).rows
+})
+
+ipcMain.handle('getEntryByRun', async (event, run_id) => {
+  return (await entryModel.getEntryByRunId(run_id)).rows
 })
