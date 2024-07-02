@@ -14,7 +14,7 @@ export default function Run({ mode, index, run }) {
                         disabled:opacity-50"
       style={{ width: 95 + '%' }}
       onClick={() => {}}
-      disabled={mode !== 'read'}
+      disabled={mode === 'log'}
     >
       <h1 className="text-left">Intento {index+1}</h1>
       <div className="flex justify-between">

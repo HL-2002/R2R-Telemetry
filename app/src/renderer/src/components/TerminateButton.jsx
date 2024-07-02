@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import Dialog from './Dialog'
 import toast from 'react-hot-toast'
 
-function TerminateButton({ terminate, setTerminate, init, setMode}) {
+function TerminateButton({ terminate, setTerminate, setMode}) {
   // Reference to open and show the dialog
   const ref = useRef(null)
 

@@ -75,7 +75,6 @@ app.whenReady().then(() => {
   // IPC handler for reading data
   ipcMain.handle('read', readData)
   ipcMain.handle('log', logData)
-  ipcMain.handle('init', initDataLog)
 
   createWindow()
 
@@ -96,16 +95,9 @@ app.on('window-all-closed', () => {
 })
 
 // Only reads and returns the data
-async function readData() {
+async function readData(event, args) {
   let entries = await read()
-
-  return entries
-}
-
-// Initializes the data log at session creation
-async function initDataLog() {
-  let entries = await read()
-  // TODO: Do things with the data before sending it
+  addEntries(entries, args)
 
   return entries
 }
@@ -113,15 +105,14 @@ async function initDataLog() {
 // Reads and logs the data before returning it
 async function logData(event, args) {
   let entries = await read()
-  // TODO: Do things with the data before sending it
+  addEntries(entries, args)
+
   try {
     if (args.run_id) {
       //  the args time, distance and acceleration, will be change make this henry xdd
       await entryModel.create({
         ...entries,
         run_id: args.run_id,
-        time: 0,
-        distance: 0
       })
     }
     return entries
@@ -129,6 +120,17 @@ async function logData(event, args) {
     console.log(e)
     return { error: 'RunNotFound' }
   }
+}
+
+function addEntries(entries, args) {
+  // Add time and distance to entries
+  entries.time = Math.floor((Date.now() - args.now) / 1000) // ms to seconds
+
+  let speed = (entries.velocity * 1e3) / 3600 // km/h to m/s
+  let dt = args.frequency / 1000 // ms to seconds
+
+  // Distance as the Riemman sum of the speed times the interval of given speed
+  entries.distance = speed * dt + args.prev_distance
 }
 
 async function getAllsessions() {

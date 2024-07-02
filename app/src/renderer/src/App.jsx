@@ -115,24 +115,27 @@ let safetyDistanceLabels = []
 function App() {
   const session = useSessionStore((state) => state.session)
   const selection = useSelectionStore((state) => state.selections)
-  const [safetySelection, setSafetySelection] = useState([])
   const setSelection = useSelectionStore((state) => state.setSelection)
   const Axis = useSelectionStore((state) => state.Axis)
+  const setRunGlobal = useSessionStore((state) => state.setRuns)
+  const addRunGlobal = useSessionStore((state) => state.addRun)
+  const [safetySelection, setSafetySelection] = useState([])
   const [pause, setPause] = useState(false)
   const [init, setInit] = useState(false)
   const [now, setNow] = useState(0)
   const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
-  // Mode (log, read) depends on the app option, new session logs, and existing session reads
-  const setRunGlobal = useSessionStore((state) => state.setRuns)
-  const addRunGlobal = useSessionStore((state) => state.addRun)
-
-  const [mode, setMode] = useState('')
   const [updateTime, setUpdateTime] = useState(Date.now())
+  // Mode (log, read) depends on the app option, new session logs, and existing session reads
+  const [mode, setMode] = useState('')
 
   // for runs
   const [runDb, setRunDb] = useState(null)
   const [time, setTime] = useState(null)
+
+  // TEST
+  window.mode = mode
+  window.terminate = terminate
 
   // Set the selection based on session type
   useEffect(() => {
@@ -145,7 +148,9 @@ function App() {
     api.getRunBySession(session.id).then((res) => {
       setRunGlobal(res)
     })
+    // Reset app-related variables upon session change
     setRun(0)
+    setTerminate(false)
   }, [session])
 
   // Update data labels upon selection, axis change, and new run
@@ -181,6 +186,7 @@ function App() {
       setRunDb(null)
     })
   }, [run])
+  
   // Create a new run in the database upon initialization
   useEffect(() => {
     if (init == true) {
@@ -200,12 +206,16 @@ function App() {
     */
     async function fetchData() {
       if (init && !pause && performanceData.labels.length === 0) {
-        let newData = await readAPI.initDataLog()
+        let newData = await readAPI.logData({ run_id: runDb?.id, 
+                                              now: now, 
+                                              frequency: frequency,
+                                              prev_distance: 0})
         updateLabels(performanceTimeLabels, performanceDistanceLabels, newData)
         updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, performanceData)
         updateData(newData, safetyData)
         setMode('log')
+        setUpdateTime(Date.now())
       }
     }
 
@@ -226,11 +236,16 @@ function App() {
       if (init && !terminate) {
         let newData = {}
         if (!pause) {
-          newData = await readAPI.logData({ run_id: runDb?.id })
+          newData = await readAPI.logData({ run_id: runDb?.id, 
+                                            now, 
+                                            frequency,
+                                            prev_distance: performanceDistanceLabels[performanceDistanceLabels.length - 1]})
           updateLabels(performanceTimeLabels, performanceDistanceLabels, newData)
           updateData(newData, performanceData)
         } else {
-          newData = await readAPI.readData()
+          newData = await readAPI.readData({  now, 
+                                              frequency,
+                                              prev_distance: safetyDistanceLabels[safetyDistanceLabels.length - 1]})
         }
         updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, safetyData)
@@ -241,7 +256,7 @@ function App() {
     return () => clearInterval(graphInterval)
   }, [init, pause, terminate, runDb])
 
-  // Reset data upon new run when the component is reloaded
+  // Reset data-related variables upon new run when the component is reloaded
   useEffect(() => {
     return () => {
       setInit(false)
@@ -271,17 +286,8 @@ function App() {
   }
 
   function updateLabels(timeLabels, distanceLabels, newData) {
-    let time = Date.now() - now
-    timeLabels.push(Math.floor(time / 1000)) // ms to seconds
-
-    let speed = (newData['velocity'] * 1e3) / 3600 // km/h to m/s
-    let dt = frequency / 1000 // ms to seconds
-    // distance as the Riemman sum of the speed times the interval of given speed
-    if (distanceLabels.length === 0) {
-      distanceLabels.push(speed * dt)
-    } else {
-      distanceLabels.push(speed * dt + distanceLabels[distanceLabels.length - 1])
-    }
+    timeLabels.push(newData.time)
+    distanceLabels.push(newData.distance)
   }
 
   function filterData(data, selection) {
@@ -329,7 +335,7 @@ function App() {
             {session != null ? (
               <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
                 <h1 className="font-black">
-                  {session?.description} - {session?.type} : Intento Nro {run}
+                  {session?.description} - {session?.type} : Intento Nro {run+1}
                 </h1>
                 <div className="flex">
                   <DataSelection />
@@ -339,7 +345,6 @@ function App() {
                   <TerminateButton
                     terminate={terminate}
                     setTerminate={setTerminate}
-                    init={init}
                     setMode={setMode}
                   />
                 </div>
@@ -402,7 +407,7 @@ function App() {
             {session != null ? (
               <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
                 <h1 className="font-black">
-                  {session?.description} - {session?.type} : Intento Nro {run}
+                  {session?.description} - {session?.type}
                 </h1>
                 <div className="flex">
                   <DataSelection />
