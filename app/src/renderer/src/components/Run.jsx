@@ -1,4 +1,4 @@
-import { useSessionStore } from "../context/SessionContext"
+import { useSessionStore } from '../context/SessionContext'
 
 export default function Run({ mode, index, run }) {
   const setEntry = useSessionStore((state) => state.setEntry)
