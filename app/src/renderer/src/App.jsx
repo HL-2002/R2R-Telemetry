@@ -140,6 +140,8 @@ function App() {
     console.log(entries)
   }, [entries])
 
+  window.mode = mode
+
   // Set the selection based on session type
   useEffect(() => {
     if (session == null) return
@@ -152,6 +154,7 @@ function App() {
       setRunGlobal(res)
     })
     setRun(0)
+    setTerminate(false)
   }, [session])
 
   // Update data labels upon selection, axis change, new run, or plot init
@@ -217,7 +220,6 @@ function App() {
         updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, performanceData)
         updateData(newData, safetyData)
-        setMode('log')
       }
     }
 
@@ -267,7 +269,6 @@ function App() {
     return () => {
       setInit(false)
       setPause(false)
-      setTerminate(false)
       performanceData = dataInit(performanceEntries)
       safetyData = dataInit(safetyEntries)
       performanceTimeLabels = []
