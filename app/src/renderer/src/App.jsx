@@ -120,6 +120,7 @@ function App() {
   const setRunGlobal = useSessionStore((state) => state.setRuns)
   const addRunGlobal = useSessionStore((state) => state.addRun)
   const [safetySelection, setSafetySelection] = useState([])
+  // For app control
   const [pause, setPause] = useState(false)
   const [init, setInit] = useState(false)
   const [now, setNow] = useState(0)
@@ -129,20 +130,12 @@ function App() {
   // Mode (log, read) depends on the app option, new session logs, and existing session reads
   const [mode, setMode] = useState('')
 
-  // for runs
+  // For run logging and updating
   const [runDb, setRunDb] = useState(null)
   const [time, setTime] = useState(null)
   const entries = useSessionStore((state) => state.Entry)
 
-  // TEST
-  window.mode = mode
-  window.terminate = terminate
-
-  useEffect(()=>{
-    console.log(entries)
-  },[entries])
-
-
+  
   // Set the selection based on session type
   useEffect(() => {
     if (session == null) return
@@ -154,12 +147,10 @@ function App() {
     api.getRunBySession(session.id).then((res) => {
       setRunGlobal(res)
     })
-    // Reset app-related variables upon session change
     setRun(0)
-    setTerminate(false)
   }, [session])
 
-  // Update data labels upon selection, axis change, and new run
+  // Update data labels upon selection, axis change, new run, or plot init
   /* 
     NOTE: Even though is not as efficient to update the x labels whenever a data selection 
     changes, or the other way around; separating label change and data filter based on selection,
@@ -180,7 +171,7 @@ function App() {
     safetySelectionData = filterData(safetyData, safetySelection)
     // Refresh component
     setUpdateTime(Date.now())
-  }, [run, selection, safetySelection, Axis])
+  }, [run, init, selection, safetySelection, Axis])
 
   // Every time the run changes, update the duration in db
   useEffect(() => {
@@ -223,7 +214,6 @@ function App() {
         updateData(newData, performanceData)
         updateData(newData, safetyData)
         setMode('log')
-        setUpdateTime(Date.now())
       }
     }
 
@@ -268,11 +258,12 @@ function App() {
     return () => clearInterval(graphInterval)
   }, [init, pause, terminate, runDb])
 
-  // Reset data-related variables upon new run when the component is reloaded
+  // Reset variables upon new run, mode or session change, when the component is reloaded
   useEffect(() => {
     return () => {
       setInit(false)
       setPause(false)
+      setTerminate(false)
       performanceData = dataInit(performanceEntries)
       safetyData = dataInit(safetyEntries)
       performanceTimeLabels = []
@@ -280,7 +271,8 @@ function App() {
       safetyTimeLabels = []
       safetyDistanceLabels = []
     }
-  }, [run, mode])
+  }, [run, mode, session])
+
 
   // Data update and filter functions
   function updateData(newData, data) {
@@ -314,6 +306,7 @@ function App() {
 
     return filteredData
   }
+
 
   // App layout
   // Decide which control header to show
