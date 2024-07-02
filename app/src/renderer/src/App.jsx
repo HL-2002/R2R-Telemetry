@@ -185,8 +185,8 @@ function App() {
       // clean runDb for preventing multiple updates
       setRunDb(null)
     })
-  }, [run])
-  
+  }, [run, terminate])
+
   // Create a new run in the database upon initialization
   useEffect(() => {
     if (init == true) {
@@ -206,10 +206,12 @@ function App() {
     */
     async function fetchData() {
       if (init && !pause && performanceData.labels.length === 0) {
-        let newData = await readAPI.logData({ run_id: runDb?.id, 
-                                              now: now, 
-                                              frequency: frequency,
-                                              prev_distance: 0})
+        let newData = await readAPI.logData({
+          run_id: runDb?.id,
+          now: now,
+          frequency: frequency,
+          prev_distance: 0
+        })
         updateLabels(performanceTimeLabels, performanceDistanceLabels, newData)
         updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, performanceData)
@@ -236,16 +238,20 @@ function App() {
       if (init && !terminate) {
         let newData = {}
         if (!pause) {
-          newData = await readAPI.logData({ run_id: runDb?.id, 
-                                            now, 
-                                            frequency,
-                                            prev_distance: performanceDistanceLabels[performanceDistanceLabels.length - 1]})
+          newData = await readAPI.logData({
+            run_id: runDb?.id,
+            now,
+            frequency,
+            prev_distance: performanceDistanceLabels[performanceDistanceLabels.length - 1]
+          })
           updateLabels(performanceTimeLabels, performanceDistanceLabels, newData)
           updateData(newData, performanceData)
         } else {
-          newData = await readAPI.readData({  now, 
-                                              frequency,
-                                              prev_distance: safetyDistanceLabels[safetyDistanceLabels.length - 1]})
+          newData = await readAPI.readData({
+            now,
+            frequency,
+            prev_distance: safetyDistanceLabels[safetyDistanceLabels.length - 1]
+          })
         }
         updateLabels(safetyTimeLabels, safetyDistanceLabels, newData)
         updateData(newData, safetyData)
@@ -307,32 +313,31 @@ function App() {
   // Decide which control header to show
   let control = <></>
   if (mode === 'log') {
-    control = <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
-                <h1 className="font-black">
-                  {session?.description} - {session?.type} : Intento Nro {run+1}
-                </h1>
-                <div className="flex">
-                  <DataSelection />
-                  <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection} />
-                  <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate} />
-                  <NewButton init={init} run={run} pause={pause} setRun={setRun} />
-                  <TerminateButton
-                    terminate={terminate}
-                    setTerminate={setTerminate}
-                    setMode={setMode}
-                  />
-                </div>
-              </div>
-  }
-  else if (mode === 'read') {
-    control = <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
-                <h1 className="font-black">
-                  {session?.description} - {session?.type}
-                </h1>
-                <div className="flex">
-                  <DataSelection />
-                </div>
-              </div>
+    control = (
+      <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
+        <h1 className="font-black">
+          {session?.description} - {session?.type} : Intento Nro {run + 1}
+        </h1>
+        <div className="flex">
+          <DataSelection />
+          <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection} />
+          <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate} />
+          <NewButton init={init} run={run} pause={pause} setRun={setRun} />
+          <TerminateButton terminate={terminate} setTerminate={setTerminate} setMode={setMode} />
+        </div>
+      </div>
+    )
+  } else if (mode === 'read') {
+    control = (
+      <div id="CONTROL" style={{ height: controlHeight + 'vh' }} className="mb-1">
+        <h1 className="font-black">
+          {session?.description} - {session?.type}
+        </h1>
+        <div className="flex">
+          <DataSelection />
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -385,8 +390,6 @@ function App() {
       </div>
     </>
   )
-
-  
 }
 
 export default App
