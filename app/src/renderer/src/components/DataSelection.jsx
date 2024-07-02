@@ -59,7 +59,7 @@ export function DataSelection() {
         }}
         disabled={session===null}
       >
-        Cambiar selecion
+        Cambiar selección
       </button>
       <Dialog isOpen={false} someRef={ref}>
         <div className="grid grid-cols-2 gap-4 relative">
@@ -79,7 +79,7 @@ export function DataSelection() {
                 )
               })}
             </ul>
-            <h3 className="text-xl text-[#dee4ea] mb-2">Grafica</h3>
+            <h3 className="text-xl text-[#dee4ea] mb-2">Eje X</h3>
             <div className="flex flex-col text-[#dee4ea] gap-2">
               <label
                 onClick={() => {
@@ -97,7 +97,7 @@ export function DataSelection() {
                 className="flex gap-2"
               >
                 <input type="radio" name="axis" defaultChecked />
-                <span> tiempo</span>
+                <span> Tiempo</span>
               </label>
             </div>
           </div>

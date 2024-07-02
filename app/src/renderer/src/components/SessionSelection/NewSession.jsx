@@ -13,7 +13,7 @@ export function NewSession({ setMode }) {
   const handleSelect = async (event) => {
     const form = new FormData(event.target)
     if (!selected) {
-      toast.error('Seleccione un tipo de sesion')
+      toast.error('Seleccione un tipo de sesión')
       return
     }
 
@@ -64,9 +64,9 @@ export function NewSession({ setMode }) {
 
       "
       >
-        <h3 className="text-xl text-[#dee4ea]">Data point</h3>
+        <h3 className="text-xl text-[#dee4ea] font-bold">Data point</h3>
 
-        <ul>
+        <ul className='text-left p-3'>
           {TypesEvents.find((item) => item.name === selected)?.graph.map((item) => {
             return (
               <li key={item} className="text-white text-s">
@@ -80,11 +80,11 @@ export function NewSession({ setMode }) {
 
       <form onSubmit={handleSelect} className="flex flex-col gap-2 text-[#dee4ea]">
         <label className="flex flex-col gap-2">
-          Nombre de la sesion
+          Nombre de la sesión
           <input type="text" name="name" className="text-black p-1 rounded" />
         </label>
         <label className="flex flex-col gap-2">
-          Cedula cliente
+          Cédula cliente
           <input type="text" name="cedula" className="text-black p-1 rounded" />
         </label>
 
@@ -96,7 +96,7 @@ export function NewSession({ setMode }) {
         text-[#dee4ea]
         hover:bg-[#ec6d2d]
 
-        // aling right - bottom
+        // align right - bottom
         absolute
         right-8
         bottom-8

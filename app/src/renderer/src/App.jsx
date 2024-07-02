@@ -135,7 +135,11 @@ function App() {
   const [time, setTime] = useState(null)
   const entries = useSessionStore((state) => state.Entry)
 
-  
+  // DELETE AFTER TESTING
+  useEffect(() => {
+    console.log(entries)
+  }, [entries])
+
   // Set the selection based on session type
   useEffect(() => {
     if (session == null) return

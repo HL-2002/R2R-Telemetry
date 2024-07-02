@@ -7,14 +7,14 @@ export function MenuPage({ changePage }) {
           changePage(1)
         }}
       >
-        Nueva sesion
+        Nueva sesión
       </SessionButton>
       <SessionButton
         onClick={() => {
           changePage(2)
         }}
       >
-        Cargar sesion
+        Cargar sesión
       </SessionButton>
       <SessionButton
         onClick={() => {
@@ -28,7 +28,7 @@ export function MenuPage({ changePage }) {
           changePage(4)
         }}
       >
-        Borrar Sesion
+        Borrar sesión
       </SessionButton>
     </div>
   )
