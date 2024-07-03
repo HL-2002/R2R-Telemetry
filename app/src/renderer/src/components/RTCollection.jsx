@@ -266,6 +266,9 @@ function configScale(label) {
     characters, so that all labels have the same length.
 
     These labels are the rpms, gear, lateral_g, and tire_pressure_fl.
+
+    It also does this for stering_angle, as it has a length of 5 (3 digits, blank and a sign),
+    eliminating the sign for the negative values.
     */
   switch (label) {
     case 'velocity':
@@ -307,6 +310,11 @@ function configScale(label) {
       y.max = 270
       y.min = -270
       y.ticks.stepSize = 90
+      y.afterTickToLabelConversion = (ctx) => {
+        ctx.ticks.forEach((tick) => {
+          tick.label = String(tick.value).replace('-', '')
+        })
+      }
       return y
 
     case 'tire_pressure_fl':
@@ -350,7 +358,7 @@ function configAxis(axis) {
   if (axis === 'time') {
     x.ticks = {
       callback: function (value, index, ticks) {
-        return this.getLabelForValue(value)
+        return Math.floor(this.getLabelForValue(value))
       }
     }
     x.title.text = "Tiempo (s)"
