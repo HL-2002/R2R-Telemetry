@@ -114,12 +114,12 @@ let safetyDistanceLabels = []
 
 function App() {
   const session = useSessionStore((state) => state.session)
+  const Axis = useSelectionStore((state) => state.Axis)
   const selection = useSelectionStore((state) => state.selections)
   const setSelection = useSelectionStore((state) => state.setSelection)
-  const Axis = useSelectionStore((state) => state.Axis)
+  const [safetySelection, setSafetySelection] = useState([])
   const setRunGlobal = useSessionStore((state) => state.setRuns)
   const addRunGlobal = useSessionStore((state) => state.addRun)
-  const [safetySelection, setSafetySelection] = useState([])
   // For app control
   const [pause, setPause] = useState(false)
   const [init, setInit] = useState(false)
@@ -127,6 +127,7 @@ function App() {
   const [run, setRun] = useState(0)
   const [terminate, setTerminate] = useState(false)
   const [updateTime, setUpdateTime] = useState(Date.now())
+  const [refresh, setRefresh] = useState(false)
   // Mode (log, read) depends on the app option, new session logs, and existing session reads
   const [mode, setMode] = useState('')
 
@@ -135,16 +136,11 @@ function App() {
   const [time, setTime] = useState(null)
   const entries = useSessionStore((state) => state.Entry)
 
-  // DELETE AFTER TESTING
-  useEffect(() => {
-    console.log(entries)
-  }, [entries])
-
-  window.mode = mode
 
   // Set the selection based on session type
   useEffect(() => {
     if (session == null) return
+
     const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
     setSelection(sele)
     // TODO: Change safetyEntries for the actual safety selection with the components
@@ -178,7 +174,7 @@ function App() {
     safetySelectionData = filterData(safetyData, safetySelection)
     // Refresh component
     setUpdateTime(Date.now())
-  }, [run, init, selection, safetySelection, Axis])
+  }, [run, init, selection, safetySelection, Axis, refresh])
 
   // Every time the run changes, update the duration in db
   useEffect(() => {
@@ -191,7 +187,7 @@ function App() {
     })
   }, [run, terminate])
 
-  // Create a new run in th>e database upon initialization
+  // Create a new run in the database upon initialization
   useEffect(() => {
     if (init == true) {
       api.CreateRun({ session_id: session.id }).then((res) => {
@@ -276,7 +272,29 @@ function App() {
       safetyTimeLabels = []
       safetyDistanceLabels = []
     }
-  }, [run, mode, session])
+  }, [run, mode, session, entries])
+
+  // Plot entries from selected run
+  useEffect(() => {
+    if (entries === null) return
+
+    let serializedEntries = serializeEntries(entries)
+
+    for (let i = 0; i < performanceData.datasets.length; i++) {
+      performanceData.datasets[i].data = serializedEntries[performanceData.datasets[i].label]
+    }
+    for (let i = 0; i < safetyData.datasets.length; i++) {
+      safetyData.datasets[i].data = serializedEntries[safetyData.datasets[i].label]
+    }
+    performanceTimeLabels = serializedEntries.time
+    safetyTimeLabels = performanceTimeLabels
+    performanceDistanceLabels = serializedEntries.distance
+    safetyDistanceLabels = performanceDistanceLabels
+
+    // Call the selection and axis update useEffect to set the labels and filter the data
+    setRefresh(!refresh)
+
+  }, [entries])
 
 
   // Data update and filter functions
@@ -312,6 +330,30 @@ function App() {
     return filteredData
   }
 
+  function serializeEntries (entries) {
+    // Serialize entries, with the shape:
+    // {label: [data], ...}
+    let serializedEntries = {}
+
+    // Iterate over the entries
+    for (let i = 0; i < entries.length; i++) {
+      // Iterate over each entry's values
+      for (const [key, value] of Object.entries(entries[i])) {
+        // Validate existence of key in serializedEntries
+        // BUG: last entry's id is being pushed to the serializedEntries
+        if (key !== 'id' && key !== 'run_id') {
+          if (key in serializedEntries) {
+            serializedEntries[key].push(value)
+          }
+          else {
+            serializedEntries[key] = [value]
+          }
+        }
+      }
+    }
+
+    return serializedEntries
+  }
 
   // App layout
   // Decide which control header to show
