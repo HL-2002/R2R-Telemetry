@@ -124,7 +124,7 @@ async function logData(event, args) {
 
 function addEntries(entries, args) {
   // Add time and distance to entries
-  entries.time = Math.floor((Date.now() - args.now) / 1000) // ms to seconds
+  entries.time = (Date.now() - args.now) / 1000 // ms to seconds
 
   let speed = (entries.velocity * 1e3) / 3600 // km/h to m/s
   let dt = args.frequency / 1000 // ms to seconds
