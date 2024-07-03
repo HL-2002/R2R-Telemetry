@@ -19,6 +19,12 @@ export function NewSession({ setMode }) {
 
     if (!form.get('name') || !form.get('cedula')) {
       toast.error('Ingrese los datos faltantes')
+      return
+    }
+
+    if (form.get('name').length > 20) {
+      toast.error('Nombre mayor a 20 caracteres')
+      return
     }
 
     const session = await api.CreateSession({
