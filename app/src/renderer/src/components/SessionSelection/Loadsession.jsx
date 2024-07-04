@@ -3,6 +3,7 @@ import { useSessionStore } from '../../context/SessionContext'
 import toast from 'react-hot-toast'
 export function LoadSession({ multiple = false, toDelete = false, setMode }) {
   const setSession = useSessionStore((state) => state.setSession)
+  const session = useSessionStore((state) => state.session)
   const [data, setData] = useState([])
   const [selected, setSelected] = useState([])
 
@@ -39,6 +40,9 @@ export function LoadSession({ multiple = false, toDelete = false, setMode }) {
       })
       // detelete from interface
       setData(data.filter((item) => !selected.includes(item.id)))
+      if(session.id == BigInt(selected[0])){
+        setSession(null)
+      }
     }
 
     if (!multiple && !toDelete) {
