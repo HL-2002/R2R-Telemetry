@@ -136,10 +136,13 @@ function App() {
   const [time, setTime] = useState(null)
   const entries = useSessionStore((state) => state.Entry)
 
-
   // Set the selection based on session type
   useEffect(() => {
-    if (session == null) return
+    if (session == null) {
+      setRunGlobal([])
+      setRun(0)
+      return
+    }
 
     const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
     setSelection(sele)
@@ -293,9 +296,7 @@ function App() {
 
     // Call the selection and axis update useEffect to set the labels and filter the data
     setRefresh(!refresh)
-
   }, [entries])
-
 
   // Data update and filter functions
   function updateData(newData, data) {
@@ -330,7 +331,7 @@ function App() {
     return filteredData
   }
 
-  function serializeEntries (entries) {
+  function serializeEntries(entries) {
     // Serialize entries, with the shape:
     // {label: [data], ...}
     let serializedEntries = {}
@@ -344,8 +345,7 @@ function App() {
         if (key !== 'id' && key !== 'run_id') {
           if (key in serializedEntries) {
             serializedEntries[key].push(value)
-          }
-          else {
+          } else {
             serializedEntries[key] = [value]
           }
         }
