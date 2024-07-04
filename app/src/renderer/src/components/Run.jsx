@@ -2,26 +2,38 @@ import { useSessionStore } from '../context/SessionContext'
 
 export default function Run({ mode, index, run }) {
   const setEntry = useSessionStore((state) => state.setEntry)
+  const addEntry = useSessionStore((state) => state.addEntry)
+  const entries = useSessionStore((state) => state.Entry)
   const min = Math.floor(run?.duration / 60000)
   const sec = Math.floor((run?.duration % 60000) / 1000)
   const ms = Math.floor(run?.duration % 1000)
 
   // this function gets the entries for the run
   const handleClick = async () => {
-    const entries = await api.getEntryByRun(run.id)
-    setEntry(entries)
+    // if the entries are already loaded, don't load them again,remove by id
+    if (entries.some((entry) => entry.run_id === run.id)) {
+      setEntry(entries.filter((entry) => entry.run_id !== run.id))
+      return
+    }
+
+    const entriesDB = await api.getEntryByRun(run.id)
+    addEntry({ entries: entriesDB, run_id: run.id })
   }
 
+  const isSelected = entries.some((entry) => entry.run_id === run.id)
   return (
     <button
-      className="m-1 p-2
+      className={`m-1 p-2
                         bg-[#e94926]
                         rounded-md
                         text-[#dee4ea]
                         shadow-2xl
                         shadow-slate-900
                         hover:bg-[#ec6d2d]
-                        disabled:opacity-50"
+                        disabled:opacity-50
+
+                        ${isSelected ? 'bg-[#ec6d2d]' : 'bg-[#e94926]'}
+                        `}
       style={{ width: 95 + '%' }}
       onClick={handleClick}
       disabled={mode === 'log'}
