@@ -10,11 +10,9 @@ const { TypesEvents } = constants
 // Component imports
 import RTCollection from './components/RTCollection.jsx'
 import SessionSelection from './components/SessionSelection/SessionSelection.jsx'
-import PauseButton from './components/PauseButton.jsx'
-import InitButton from './components/InitButton.jsx'
-import NewButton from './components/NewButton.jsx'
 import TerminateButton from './components/TerminateButton.jsx'
 import RunCollection from './components/RunCollection.jsx'
+import Button from './components/Button.jsx'
 
 // Import contexts
 import { useSessionStore } from './context/SessionContext'
@@ -366,9 +364,19 @@ function App() {
         </h1>
         <div className="flex">
           <DataSelection />
-          <InitButton init={init} setInit={setInit} setNow={setNow} selection={selection} />
-          <PauseButton pause={pause} setPause={setPause} init={init} terminate={terminate} />
-          <NewButton init={init} run={run} pause={pause} setRun={setRun} />
+          <Button disabled={init || session === null || !(selection.length > 0)}
+                  onClick={() => {
+                    setInit(true)
+                    setNow(Date.now())
+                  }}> 
+            Iniciar 
+          </Button>
+          <Button disabled={!init || terminate} onClick={() => setPause(!pause)}>
+            {pause ? 'Reanudar' : 'Pausar'}
+          </Button>
+          <Button disabled={!(init && pause)} onClick={() => setRun(run + 1)}>
+            Nuevo intento
+          </Button>
           <TerminateButton terminate={terminate} setTerminate={setTerminate} setMode={setMode} />
         </div>
       </div>
