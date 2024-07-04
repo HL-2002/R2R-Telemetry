@@ -21,13 +21,6 @@ export function MenuPage({ changePage }) {
           changePage(3)
         }}
       >
-        Comparar sesiones
-      </SessionButton>
-      <SessionButton
-        onClick={() => {
-          changePage(4)
-        }}
-      >
         Borrar sesión
       </SessionButton>
     </div>

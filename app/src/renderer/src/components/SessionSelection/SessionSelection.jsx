@@ -34,8 +34,7 @@ export default function SessionSelection({ setMode, mode, terminate, init }) {
         {page === 0 ? <MenuPage changePage={setPage} /> : null}
         {page === 1 ? <NewSession setMode={setMode}/> : null}
         {page === 2 ? <LoadSession setMode={setMode}/> : null}
-        {page === 3 ? <LoadSession multiple /> : null}
-        {page === 4 ? <LoadSession toDelete /> : null}
+        {page === 3 ? <LoadSession toDelete /> : null}
       </Dialog>
     </>
   )
