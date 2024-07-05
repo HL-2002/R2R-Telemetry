@@ -111,13 +111,20 @@ let safetyTimeLabels = []
 let safetyDistanceLabels = []
 
 function App() {
-  const session = useSessionStore((state) => state.session)
+  // some global states
   const Axis = useSelectionStore((state) => state.Axis)
+  const entries = useSessionStore((state) => state.Entry)
   const selection = useSelectionStore((state) => state.selections)
-  const setSelection = useSelectionStore((state) => state.setSelection)
-  const [safetySelection, setSafetySelection] = useState([])
-  const setRunGlobal = useSessionStore((state) => state.setRuns)
+  const session = useSessionStore((state) => state.session)
+
+  // methods to update the global states
   const addRunGlobal = useSessionStore((state) => state.addRun)
+  const setEntries = useSessionStore((state) => state.setEntry)
+  const setRunGlobal = useSessionStore((state) => state.setRuns)
+  const setSelection = useSelectionStore((state) => state.setSelection)
+
+  const [safetySelection, setSafetySelection] = useState([])
+
   // For app control
   const [pause, setPause] = useState(false)
   const [init, setInit] = useState(false)
@@ -132,24 +139,28 @@ function App() {
   // For run logging and updating
   const [runDb, setRunDb] = useState(null)
   const [time, setTime] = useState(null)
-  const entries = useSessionStore((state) => state.Entry)
 
-  // Set the selection based on session type
+  // Update run global state upon session change
   useEffect(() => {
+    // if there is no session, reset some  states
     if (session == null) {
       setRunGlobal([])
       setRun(0)
+      setEntries([])
       return
     }
 
+    // get the Default selection from the default graph based on the session type
     const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
     setSelection(sele)
     // TODO: Change safetyEntries for the actual safety selection with the components
     setSafetySelection(safetyEntries)
 
+    // get the runs for the session and set the global state
     api.getRunBySession(session.id).then((res) => {
       setRunGlobal(res)
     })
+    //reset the run to 0 when the session changes
     setRun(0)
     setTerminate(false)
   }, [session])
@@ -177,11 +188,14 @@ function App() {
     setUpdateTime(Date.now())
   }, [run, init, selection, safetySelection, Axis, refresh])
 
-  // Every time the run changes, update the duration in db
+  // Every time the run changes or App is terminated, update the run in the database and update the UI
   useEffect(() => {
+    // if there is not exist in the db, return
     if (runDb == null) return
+    // calculate the duration and update the run
     const duration = Date.now() - time
     api.UpdateRun({ id: runDb.id, duration: duration, hour: runDb.hour }).then((res) => {
+      // add run to Global state to update the UI
       addRunGlobal(res)
       // clean runDb for preventing multiple updates
       setRunDb(null)
@@ -190,9 +204,13 @@ function App() {
 
   // Create a new run in the database upon initialization
   useEffect(() => {
+    // if there is no session, return
     if (init == true) {
+      // create a new run in the database
       api.CreateRun({ session_id: session.id }).then((res) => {
+        // set the runDb
         setRunDb(res)
+        //  set the time for the run start
         setTime(Date.now())
       })
     }
@@ -364,12 +382,14 @@ function App() {
         </h1>
         <div className="flex">
           <DataSelection />
-          <Button disabled={init || session === null || !(selection.length > 0)}
-                  onClick={() => {
-                    setInit(true)
-                    setNow(Date.now())
-                  }}> 
-            Iniciar 
+          <Button
+            disabled={init || session === null || !(selection.length > 0)}
+            onClick={() => {
+              setInit(true)
+              setNow(Date.now())
+            }}
+          >
+            Iniciar
           </Button>
           <Button disabled={!init || terminate} onClick={() => setPause(!pause)}>
             {pause ? 'Reanudar' : 'Pausar'}
