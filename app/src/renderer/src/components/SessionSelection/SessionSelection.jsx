@@ -5,7 +5,9 @@ import { LoadSession } from './Loadsession'
 import { NewSession } from './NewSession'
 
 export default function SessionSelection({ setMode, mode, terminate, init }) {
+  // page state to control the rendering of the pages
   const [page, setPage] = useState(0)
+  // ref to the react dialog
   const ref = useRef()
 
   return (
@@ -31,9 +33,12 @@ export default function SessionSelection({ setMode, mode, terminate, init }) {
         Selecionar Sesión
       </button>
       <Dialog isOpen={false} someRef={ref}>
+        {/* 
+         this render the page in the Dialog based on the page state
+        */}
         {page === 0 ? <MenuPage changePage={setPage} /> : null}
-        {page === 1 ? <NewSession setMode={setMode}/> : null}
-        {page === 2 ? <LoadSession setMode={setMode}/> : null}
+        {page === 1 ? <NewSession setMode={setMode} /> : null}
+        {page === 2 ? <LoadSession setMode={setMode} /> : null}
         {page === 3 ? <LoadSession toDelete /> : null}
       </Dialog>
     </>
