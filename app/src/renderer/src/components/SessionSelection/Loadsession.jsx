@@ -1,55 +1,86 @@
 import { useState, useEffect } from 'react'
+// global state session
 import { useSessionStore } from '../../context/SessionContext'
+// for notifications
 import toast from 'react-hot-toast'
+/*
+Multiple - allow to select multiple sessions
+toDelete - only allow to delete sessions selected
+setMode - function to set the mode of the session
+*/
 export function LoadSession({ multiple = false, toDelete = false, setMode }) {
-  const setSession = useSessionStore((state) => state.setSession)
+  //session store
   const session = useSessionStore((state) => state.session)
+  // set session
+  const setSession = useSessionStore((state) => state.setSession)
+  // array of sessions in the interface
   const [data, setData] = useState([])
+  // array of selected sessions
   const [selected, setSelected] = useState([])
 
+  // when the component mounts, get all the sessions from the db
   useEffect(() => {
+    // get all sessions and set in the data state
     api.getAllSessions().then((data) => setData(data))
   }, [])
 
+  // click in a session
+  /**
+   *
+   * @param {number} id  id of the session
+   * @returns {void}
+   */
   const handleSelect = (id) => {
     // if is previous selected, remove it
     if (selected.includes(id)) {
+      // remove from selected state
       setSelected(selected.filter((item) => item !== id))
       return
     }
 
+    //if is not multiple, set the selected session
     if (!multiple) {
+      // replace the selected session with the new one
       setSelected([id])
       return
     }
+    //  if is multiple, add the session to the selected array
     if (selected.includes(id)) {
+      // remove from selected state if is already selected
       setSelected(selected.filter((item) => item !== id))
     } else {
+      // add to selected state if is not selected
       setSelected([...selected, id])
     }
   }
 
+  //method to handle the click in the button
   const handleClick = () => {
+    // if there is no session selected, show a notification
     if (selected.length === 0) {
       return toast.error('Seleccione una sesion')
     }
 
+    // if is to delete, delete the selected sessions
     if (toDelete) {
       selected.forEach((id) => {
         api.deleteSession(id)
       })
       // detelete from interface
       setData(data.filter((item) => !selected.includes(item.id)))
-      if(session.id == BigInt(selected[0])){
+      //  if the session is the active session, remove it from the session store to update the interface
+      if (session.id == BigInt(selected[0])) {
         setSession(null)
       }
     }
 
+    // if is not multiple and is not to delete,set the session in the session store and load the session data
     if (!multiple && !toDelete) {
       setSession(data.find((item) => item.id === selected[0]))
       setMode('read')
     }
 
+    // if is multiple and is not to delete, set the sessions in the session store and load the sessions data
     if (multiple && !toDelete) {
       if (selected.length < 2) {
         return toast.error('Seleccione al menos dos sesiones')
