@@ -1,9 +1,16 @@
 import { useSessionStore } from '../context/SessionContext'
 
+// index is the index of the run in the list of runs
+// run is the run object that contains the data of the run
 export default function Run({ mode, index, run }) {
+  // entries of the run
+  const entries = useSessionStore((state) => state.Entry)
+
+  // functions to set the entries in the global state
   const setEntry = useSessionStore((state) => state.setEntry)
   const addEntry = useSessionStore((state) => state.addEntry)
-  const entries = useSessionStore((state) => state.Entry)
+
+  // get the minutes, seconds and milliseconds of the run
   const min = Math.floor(run?.duration / 60000)
   const sec = Math.floor((run?.duration % 60000) / 1000)
   const ms = Math.floor(run?.duration % 1000)
@@ -16,10 +23,12 @@ export default function Run({ mode, index, run }) {
       return
     }
 
+    // get the entries from the api
     const entriesDB = await api.getEntryByRun(run.id)
+    // set the entries in the global state to show them in the UI
     addEntry({ entries: entriesDB, run_id: run.id })
   }
-
+  //  check if the run is selected to change the color of the button
   const isSelected = entries.some((entry) => entry.run_id === run.id)
   return (
     <button

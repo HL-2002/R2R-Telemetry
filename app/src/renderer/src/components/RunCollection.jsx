@@ -2,6 +2,7 @@ import { useSessionStore } from '../context/SessionContext'
 import Run from './Run'
 
 export default function RunCollection({ mode }) {
+  // get all the runs of the current session
   const runs = useSessionStore((state) => state.Runs)
   return (
     <div
@@ -12,9 +13,12 @@ export default function RunCollection({ mode }) {
                         p-2
                         flex-grow"
     >
-      {runs.map((run, index) => (
-        <Run key={run.id} index={index} run={run} mode={mode} />
-      ))}
+      {
+        //map each run to a Run component to show the data
+        runs.map((run, index) => (
+          <Run key={run.id} index={index} run={run} mode={mode} />
+        ))
+      }
     </div>
   )
 }
