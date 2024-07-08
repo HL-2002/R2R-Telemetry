@@ -35,6 +35,8 @@ export default function Run({ mode, index, run }) {
       className={`m-1 p-2
                         bg-[#e94926]
                         rounded-md
+                        ${isSelected ? 'text-black': 'text-[#dee4ea]'}
+                        font-bold
                         text-[#dee4ea]
                         shadow-2xl
                         shadow-slate-900
