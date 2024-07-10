@@ -61,12 +61,12 @@ data = {
   labels: [],
   datasets: [
     {
-      sessionId: 0,
+      runId: 0,
       label: 'velocity',
       data: []
     },
     {
-      sessionId: 0,
+      runId: 0,
       label: 'rpms',
       data: []
     },
@@ -81,7 +81,7 @@ function dataInit(dataSelection) {
 
   for (let i = 0; i < dataSelection.length; i++) {
     data.datasets.push({
-      sessionId: 0,
+      runId: 0,
       label: dataSelection[i],
       data: []
     })
@@ -102,8 +102,6 @@ function dataInit(dataSelection) {
 */
 let performanceData = dataInit(performanceEntries)
 let safetyData = dataInit(safetyEntries)
-let performanceSelectionData = { labels: [], datasets: [] }
-let safetySelectionData = { labels: [], datasets: [] }
 
 let performanceTimeLabels = []
 let performanceDistanceLabels = []
@@ -115,7 +113,9 @@ function App() {
   const Axis = useSelectionStore((state) => state.Axis)
   const entries = useSessionStore((state) => state.Entry)
   const selection = useSelectionStore((state) => state.selections)
+  const [safetySelection, setSafetySelection] = useState([])
   const session = useSessionStore((state) => state.session)
+  const runs = useSessionStore((state) => state.Runs)
 
   // methods to update the global states
   const addRunGlobal = useSessionStore((state) => state.addRun)
@@ -123,7 +123,6 @@ function App() {
   const setRunGlobal = useSessionStore((state) => state.setRuns)
   const setSelection = useSelectionStore((state) => state.setSelection)
 
-  const [safetySelection, setSafetySelection] = useState([])
 
   // For app control
   const [pause, setPause] = useState(false)
@@ -140,13 +139,18 @@ function App() {
   const [runDb, setRunDb] = useState(null)
   const [time, setTime] = useState(null)
 
+  // Some variables
+  let minRunId = getMin(runs) 
+
+  // HOOKS
   // Update run global state upon session change
   useEffect(() => {
-    // if there is no session, reset some  states
+    // Reset entries
+    setEntries([])
+    // If there is no session, reset some  states
     if (session == null) {
       setRunGlobal([])
       setRun(0)
-      setEntries([])
       return
     }
 
@@ -181,9 +185,6 @@ function App() {
       performanceData.labels = performanceDistanceLabels
       safetyData.labels = safetyDistanceLabels
     }
-
-    performanceSelectionData = filterData(performanceData, selection)
-    safetySelectionData = filterData(safetyData, safetySelection)
     // Refresh component
     setUpdateTime(Date.now())
   }, [run, init, selection, safetySelection, Axis, refresh])
@@ -295,26 +296,50 @@ function App() {
 
   // Plot entries from selected run
   useEffect(() => {
-    if (entries === null) return
-
-    let serializedEntries = serializeEntries(entries)
-
-    for (let i = 0; i < performanceData.datasets.length; i++) {
-      performanceData.datasets[i].data = serializedEntries[performanceData.datasets[i].label]
+    // Refresh component when no entries are selected
+    if (entries.length < 1) {
+      setRefresh(!refresh)
+      return
     }
-    for (let i = 0; i < safetyData.datasets.length; i++) {
-      safetyData.datasets[i].data = serializedEntries[safetyData.datasets[i].label]
+
+    // Clear datasets
+    performanceData.datasets = []
+    safetyData.datasets = []
+
+    // Iterate over entries to update the data
+    for (let i=0; i < entries.length; i++){
+      let serializedEntries = serializeEntries(entries[i].entries)
+      
+      // Push datasets based on selection 
+      for (let j=0; j < selection.length; j++){
+        performanceData.datasets.push({
+          runId: entries[i].run_id,
+          label: selection[j],
+          data: serializedEntries[selection[j]]
+        })
+      }
+      for (let j=0; j < safetySelection.length; j++){
+        safetyData.datasets.push({
+          runId: entries[i].run_id,
+          label: safetySelection[j],
+          data: serializedEntries[safetySelection[j]]
+        })
+      }
+      // Update X labels (only needed once)
+      if (serializedEntries.time.length > performanceTimeLabels.length){
+        performanceTimeLabels = serializedEntries.time
+        safetyTimeLabels = performanceTimeLabels
+        performanceDistanceLabels = serializedEntries.distance
+        safetyDistanceLabels = performanceDistanceLabels
+      }
     }
-    performanceTimeLabels = serializedEntries.time
-    safetyTimeLabels = performanceTimeLabels
-    performanceDistanceLabels = serializedEntries.distance
-    safetyDistanceLabels = performanceDistanceLabels
 
     // Call the selection and axis update useEffect to set the labels and filter the data
     setRefresh(!refresh)
-  }, [entries])
+  }, [entries, selection, safetySelection])
 
-  // Data update and filter functions
+
+  // FUNCTIONS
   function updateData(newData, data) {
     for (let i = 0; i < data.datasets.length; i++) {
       if (data.datasets[i].label === 'tire_pressure_fl') {
@@ -334,19 +359,6 @@ function App() {
     distanceLabels.push(newData.distance)
   }
 
-  function filterData(data, selection) {
-    let filteredData = {
-      labels: data.labels,
-      datasets: []
-    }
-
-    if (selection.length > 0) {
-      filteredData.datasets = data.datasets.filter((dataset) => selection.includes(dataset.label))
-    }
-
-    return filteredData
-  }
-
   function serializeEntries(entries) {
     // Serialize entries, with the shape:
     // {label: [data], ...}
@@ -357,7 +369,6 @@ function App() {
       // Iterate over each entry's values
       for (const [key, value] of Object.entries(entries[i])) {
         // Validate existence of key in serializedEntries
-        // BUG: last entry's id is being pushed to the serializedEntries
         if (key !== 'id' && key !== 'run_id') {
           if (key in serializedEntries) {
             serializedEntries[key].push(value)
@@ -371,7 +382,26 @@ function App() {
     return serializedEntries
   }
 
-  // App layout
+function getMin(runs) {
+  if (runs.length === 0) return 0
+
+  let minRunId = 0
+
+  for (let i=0; i < runs.length; i++) {
+    // Set the minRunId as the first dataset's runId
+    if (i===0) {
+      minRunId = runs[i].id
+    }
+    // Set the minRunId if it's greater than the current dataset runId
+    else if (runs[i].id < minRunId){
+      minRunId = runs[i].id
+    }
+  }
+  return minRunId
+}
+
+
+  // APP LAYOUT
   // Decide which control header to show
   let control = <></>
   if (mode === 'log') {
@@ -444,20 +474,26 @@ function App() {
 
           <div className="flex">
             <RTCollection
-              data={performanceSelectionData}
+              data={performanceData}
               type="performance"
               axis={Axis}
               height={mainHeight}
               frequency={frequency}
               notSafety={safetyEntries.length ? 0 : 1}
+              selection={selection}
+              selectedRunAmount={entries.length}
+              minRunId={minRunId}
             />
             <RTCollection
-              data={safetySelectionData}
+              data={safetyData}
               type="safety"
               axis={Axis}
               height={mainHeight}
               frequency={frequency}
               notSafety={0}
+              selection={safetySelection}
+              selectedRunAmount={entries.length}
+              minRunId={minRunId}
             />
           </div>
         </div>
