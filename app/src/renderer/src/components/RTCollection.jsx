@@ -222,13 +222,8 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
   // Format each plot's line style
   configList.forEach((config) => {
     config.data.datasets.forEach((dataset, i) => {
-      if (selectedRunAmount <= 1 && !dataset.label.includes('tire')) {
-        dataset.borderColor = '#ec6d2d'
-        dataset.backgroundColor = 'RGBA(236,109,45,0.41)'
-      } else {
-        dataset.borderColor = borderColors[i]
-        dataset.backgroundColor = backgroundColors[i]
-      }
+      dataset.borderColor = borderColors[i]
+      dataset.backgroundColor = backgroundColors[i]
       dataset.borderWidth = 1.5
       dataset.pointRadius = 0
     })
