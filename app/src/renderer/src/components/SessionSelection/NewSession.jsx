@@ -100,7 +100,7 @@ export function NewSession({ setMode }) {
         </ul>
       </dir>
 
-      <form onSubmit={handleSelect} className="flex flex-col gap-2 text-[#dee4ea]">
+      <form onSubmit={handleSelect} className="flex flex-col mt-4 gap-2 text-[#dee4ea]">
         <label className="flex flex-col gap-2">
           Nombre de la sesión
           <input type="text" name="name" className="text-black p-1 rounded" />

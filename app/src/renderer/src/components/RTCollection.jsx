@@ -201,7 +201,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
               drawTime: 'beforeDatasetsDraw',
               type: 'line',
               borderColor: 'white',
-              borderWidth: 1.5,
+              borderWidth: 0.5,
               borderDash: [1, 0],
               scaleID: 'y',
               value: 0
