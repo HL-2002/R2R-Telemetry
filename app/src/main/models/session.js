@@ -6,10 +6,10 @@ const create = async (session) => {
   // fecha
   // hora
   // cedula
-  const { description, type, date, time, cedula } = session
+  const { description, type, date, time } = session
   const result = await db.execute({
-    sql: `INSERT INTO session (description, type, date, time, client_id) VALUES(?, ?, ?, ?, ?)`,
-    args: [description, type, date, time, cedula]
+    sql: `INSERT INTO session (description, type, date, time) VALUES(?, ?, ?, ?)`,
+    args: [description, type, date, time]
   })
   return result
 }
