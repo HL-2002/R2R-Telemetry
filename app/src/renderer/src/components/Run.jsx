@@ -1,4 +1,5 @@
 import { useSessionStore } from '../context/SessionContext'
+import toast from 'react-hot-toast'
 
 // index is the index of the run in the list of runs
 // run is the run object that contains the data of the run
@@ -23,10 +24,17 @@ export default function Run({ mode, index, run }) {
       return
     }
 
-    // get the entries from the api
-    const entriesDB = await api.getEntryByRun(run.id)
-    // set the entries in the global state to show them in the UI
-    addEntry({ entries: entriesDB, run_id: run.id })
+    // Add 4 entries at most
+    if (entries.length < 4) {
+      // get the entries from the api
+      const entriesDB = await api.getEntryByRun(run.id)
+      // set the entries in the global state to show them in the UI
+      addEntry({ entries: entriesDB, run_id: run.id })
+    }
+    else {
+      toast.error('No se pueden cargar más de 4 intentos')
+    }
+    
   }
   //  check if the run is selected to change the color of the button
   const isSelected = entries.some((entry) => entry.run_id === run.id)
