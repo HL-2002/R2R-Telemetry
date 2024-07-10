@@ -23,7 +23,7 @@ export function NewSession({ setMode }) {
     }
 
     // if there is no name or cedula, show a notification
-    if (!form.get('name') || !form.get('cedula')) {
+    if (!form.get('name')) {
       toast.error('Ingrese los datos faltantes')
       return
     }
@@ -37,12 +37,11 @@ export function NewSession({ setMode }) {
     //  create the session in the api
     const session = await api.CreateSession({
       type: selected,
-      name: form.get('name'),
-      cedula: form.get('cedula')
+      name: form.get('name')
     })
     // if there is an error, show a notification
     if (session?.error) {
-      toast.error('Cédula de cliente no encontrada')
+      toast.error('hubo un error al crear la sesión')
       return
     }
     // show a notification of success
@@ -106,11 +105,6 @@ export function NewSession({ setMode }) {
           Nombre de la sesión
           <input type="text" name="name" className="text-black p-1 rounded" />
         </label>
-        <label className="flex flex-col gap-2">
-          Cédula cliente
-          <input type="text" name="cedula" className="text-black p-1 rounded" />
-        </label>
-
         <button
           className="
         p-2
