@@ -159,8 +159,7 @@ ipcMain.handle('CreateSession', async (event, sessionInfo) => {
     description: name,
     type: sessionInfo.type,
     date,
-    time: formattedTime,
-    cedula: sessionInfo.cedula
+    time: formattedTime
   }
   try {
     const rs = await sessionModel.create(Session)
