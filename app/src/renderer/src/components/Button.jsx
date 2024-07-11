@@ -1,4 +1,4 @@
-function Button ({ children, disabled, onClick}) {
+function Button ({ children, disabled = false, onClick}) {
     return (
         <button
           className="my-2 mr-4 p-2

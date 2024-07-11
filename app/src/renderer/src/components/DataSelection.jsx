@@ -79,7 +79,7 @@ export function DataSelection() {
                 )
               })}
             </ul>
-            <h3 className="text-xl text-[#dee4ea] mb-2">Eje X</h3>
+            <h3 className="text-xl text-[#dee4ea] mb-2 font-bold">Eje X</h3>
             <div className="flex flex-col text-[#dee4ea] gap-2">
               <label
                 onClick={() => {

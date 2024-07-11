@@ -1,4 +1,4 @@
-export default function Dialog({ children, isOpen, someRef, notX }) {
+export default function Dialog({ children, isOpen, someRef, notX=false }) {
   if (notX) {
     return (
       <dialog

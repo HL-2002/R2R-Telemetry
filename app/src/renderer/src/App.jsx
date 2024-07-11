@@ -13,6 +13,7 @@ import SessionSelection from './components/SessionSelection/SessionSelection.jsx
 import TerminateButton from './components/TerminateButton.jsx'
 import RunCollection from './components/RunCollection.jsx'
 import Button from './components/Button.jsx'
+import ExportButton from './components/ExportButton.jsx'
 
 // Import contexts
 import { useSessionStore } from './context/SessionContext'
@@ -439,6 +440,7 @@ function getMin(runs) {
         </h1>
         <div className="flex">
           <DataSelection />
+          <ExportButton />
         </div>
       </div>
     )
