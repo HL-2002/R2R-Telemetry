@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import Dialog from './Dialog'
 import Button from './Button'
+import { useSessionStore } from '../context/SessionContext'
 import toast from 'react-hot-toast'
 
 export default function ExportButton() {
@@ -12,18 +13,42 @@ export default function ExportButton() {
     const [path, setPath] = useState('')
 
     // Access to the global states
-    // Session state
-    // Run state
+    const entries = useSessionStore((state) => state.Entry)
+    const session = useSessionStore((state) => state.session)
+    const runs = useSessionStore((state) => state.Runs)
+
+    // Method to get the file path
+    const selectPath = async () => {
+        let pathObject = await readAPI.selectPath()
+        setPath(pathObject.filePaths[0])
+    }
 
 
     // Method to handle form submission
     const handleSelect = async (event) => {
         // Validate if there is no selection
-
+        if (selection == '') {
+            return toast.error('Debes seleccionar los intentos a exportar')
+        }
         // Validate if there's no path
-
+        if (path == '') {
+            return toast.error('Debes seleccionar la ruta de exportación')
+        }
         // Export the data
+        if (selection == 'selected') {
+            readApi.exportCSV(entries, path, session?.description)
+        }
+        // Export all data
+        else if (selection == 'all') {
+            let entriesDup = []
+            for (let i=0; i<runs.length; i++) {
+                let entriesDB = await api.getEntryByRun(runs[i].id)
+                entriesDup.push({entries: entriesDB})
+            }
+            readAPI.exportCSV({entries: entriesDup, path, name: session?.description})
+        }
     }
+    
 
     return (
         <>
@@ -54,7 +79,7 @@ export default function ExportButton() {
                 Ruta de exportación
             </h3>
             <div className='flex justify-center'>
-                <Button onClick={() => setPath(dialog.showOpenDialog({properties: ['openDirectory']}))}>
+                <Button onClick={() => selectPath()}>
                     Dirección
                 </Button>
                 <p className='text-slate-50
@@ -65,15 +90,11 @@ export default function ExportButton() {
                 </p>
             </div>
             <div className='flex justify-end'>
-                <Button onClick={() => toast.success('Exportando CSV...')}>
+                <Button onClick={() => handleSelect()}>
                     Exportar
                 </Button>
             </div>
         </Dialog>
         </>
     )
-}
-
-function exportCSV(entries, path) {
-
 }

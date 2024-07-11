@@ -1,8 +1,10 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
+
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import read from './reader.js'
+import { fs } from 'node:fs/promises'
 
 // imports models of db
 import sessionModel from './models/session.js'
@@ -75,6 +77,9 @@ app.whenReady().then(() => {
   // IPC handler for reading data
   ipcMain.handle('read', readData)
   ipcMain.handle('log', logData)
+  ipcMain.handle('selectPath', async () => {
+    return dialog.showOpenDialog({ properties: ['openDirectory'] })
+  })
 
   createWindow()
 
@@ -137,6 +142,13 @@ async function getAllsessions() {
   return (await sessionModel.readALL()).rows
 }
 
+
+// HANDLE EVENTS FROM RENDERER
+ipcMain.handle('export', async (event, {entries, path, name}) => {
+  // Get headers
+  console.log(path)
+})
+
 ipcMain.handle('getAllsessions', getAllsessions)
 ipcMain.handle('getSession', async (event, id) => {
   return (await sessionModel.read(id)).rows[0]
@@ -145,6 +157,7 @@ ipcMain.handle('getSession', async (event, id) => {
 ipcMain.on('deleteSession', async (event, id) => {
   await sessionModel.remove(id)
 })
+
 
 ipcMain.handle('CreateSession', async (event, sessionInfo) => {
   const date = new Date().toLocaleDateString()

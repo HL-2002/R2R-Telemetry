@@ -22,7 +22,9 @@ if (process.contextIsolated) {
     contextBridge.exposeInMainWorld('api', api)
     contextBridge.exposeInMainWorld('readAPI', {
       readData: (args) => ipcRenderer.invoke('read', args),
-      logData: (args) => ipcRenderer.invoke('log', args)
+      logData: (args) => ipcRenderer.invoke('log', args),
+      selectPath: () => ipcRenderer.invoke('selectPath'),
+      exportCSV: (args) => ipcRenderer.invoke('export', args)
     })
   } catch (error) {
     console.error(error)

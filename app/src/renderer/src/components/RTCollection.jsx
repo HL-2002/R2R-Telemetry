@@ -238,13 +238,15 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
 
   // Set update interval
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTime(Date.now())
-    }, frequency)
-
+    let interval = undefined
+    // Set interval only if there are no selected runs
+    if (selectedRunAmount < 1) {
+      interval = setInterval(() => {
+        setTime(Date.now())
+      }, frequency)
+    }
     return () => clearInterval(interval)
   })
-
 
   // Map data to plots within a div
   // All is contained within a single div, so that their width can be adjusted together.
