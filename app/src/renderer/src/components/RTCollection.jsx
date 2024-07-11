@@ -149,7 +149,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
             var legends = data.datasets.map(function(dataset, i) {
               return {
                 // TODO: Delete number casting
-                text: `Intento ${Number(dataset.runId) + 1 - Number(minRunId)}`,
+                text: `Intento ${dataset.runId + 1 - minRunId}`,
                 fontColor: dataset.borderColor,
                 fillStyle: (!Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor : dataset.backgroundColor[0]),
                 hidden: !chart.isDatasetVisible(i),

@@ -54,6 +54,9 @@ export default function ExportButton() {
                 Ruta de exportación
             </h3>
             <div className='flex justify-center'>
+                <Button onClick={() => setPath(dialog.showOpenDialog({properties: ['openDirectory']}))}>
+                    Dirección
+                </Button>
                 <p className='text-slate-50
                     text-center
                     p-4

@@ -314,14 +314,14 @@ function App() {
       // Push datasets based on selection 
       for (let j=0; j < selection.length; j++){
         performanceData.datasets.push({
-          runId: entries[i].run_id,
+          runId: Number(entries[i].run_id),
           label: selection[j],
           data: serializedEntries[selection[j]]
         })
       }
       for (let j=0; j < safetySelection.length; j++){
         safetyData.datasets.push({
-          runId: entries[i].run_id,
+          runId: Number(entries[i].run_id),
           label: safetySelection[j],
           data: serializedEntries[safetySelection[j]]
         })
@@ -398,7 +398,7 @@ function getMin(runs) {
       minRunId = runs[i].id
     }
   }
-  return minRunId
+  return Number(minRunId)
 }
 
 
