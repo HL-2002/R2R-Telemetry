@@ -74,7 +74,6 @@ export function LoadSession({ multiple = false, toDelete = false, setMode, dialo
       if (session.id == BigInt(selected[0])) {
         setSession(null)
       }
-      dialogRef.current.close()
     }
 
     // if is not multiple and is not to delete,set the session in the session store and load the session data
