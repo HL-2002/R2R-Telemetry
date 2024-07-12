@@ -8,7 +8,7 @@ Multiple - allow to select multiple sessions
 toDelete - only allow to delete sessions selected
 setMode - function to set the mode of the session
 */
-export function LoadSession({ multiple = false, toDelete = false, setMode }) {
+export function LoadSession({ multiple = false, toDelete = false, setMode, dialogRef }) {
   //session store
   const session = useSessionStore((state) => state.session)
   // set session
@@ -74,12 +74,14 @@ export function LoadSession({ multiple = false, toDelete = false, setMode }) {
       if (session.id == BigInt(selected[0])) {
         setSession(null)
       }
+      dialogRef.current.close()
     }
 
     // if is not multiple and is not to delete,set the session in the session store and load the session data
     if (!multiple && !toDelete) {
       setSession(data.find((item) => item.id === selected[0]))
       setMode('read')
+      dialogRef.current.close()
     }
 
     // if is multiple and is not to delete, set the sessions in the session store and load the sessions data

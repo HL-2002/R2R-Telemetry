@@ -6,7 +6,7 @@ import constants from '../../constants'
 //  Constants of the types of events graph
 const { TypesEvents } = constants
 
-export function NewSession({ setMode }) {
+export function NewSession({ setMode, dialogRef }) {
   //  state to control the selected type of session
   const [selected, setSelected] = useState('')
   // to set the session in the global state
@@ -49,6 +49,8 @@ export function NewSession({ setMode }) {
     //
     setSession(session)
     setMode('log')
+    dialogRef.current.close()
+    // close the dialog
   }
 
   return (
