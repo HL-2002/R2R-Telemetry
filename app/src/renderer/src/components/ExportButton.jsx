@@ -36,11 +36,14 @@ export default function ExportButton() {
     }
     // Export the data
     if (selection == 'selected') {
-      const result = await readApi.exportCSV(entries, path, session?.description)
-      if (result.success) {
-        return toast.success('Datos exportados correctamente')
-      }
-      return toast.error('Error al exportar los datos')
+        // Validate selection of runs
+        if (entries.length === 0 ) return toast.error("No hay intentos seleccionados")
+
+        const result = await readApi.exportCSV(entries, path, session?.description)
+        if (result.success) {
+            return toast.success('Datos exportados correctamente')
+        }
+        return toast.error('Error al exportar los datos')
     }
     // Export all data
     else if (selection == 'all') {
@@ -49,6 +52,10 @@ export default function ExportButton() {
         let entriesDB = await api.getEntryByRun(runs[i].id)
         entriesDup.push({ entries: entriesDB })
       }
+
+      // Validate the session has entries
+      if (entriesDup.length === 0) return toast.error("No hay datos que exportar")
+
       const result = await readAPI.exportCSV({
         entries: entriesDup,
         path,
@@ -64,13 +71,18 @@ export default function ExportButton() {
 
   return (
     <>
-      <Button onClick={() => ref.current.showModal()}>Exportar CSV</Button>
+      <Button onClick={() => {
+        ref.current.showModal()
+        setPath('')}}>
+            Exportar CSV
+        </Button>
       <Dialog someRef={ref} isOpen={false}>
         <h3
           className="text-slate-50
                             text-xl
                             text-center
-                            font-bold"
+                            font-bold
+                            p-2"
         >
           Intentos a exportar
         </h3>
@@ -92,7 +104,9 @@ export default function ExportButton() {
           className="text-slate-50
                             text-xl
                             text-center
-                            font-bold"
+                            font-bold
+                            p-2
+                            mt-2"
         >
           Ruta de exportación
         </h3>
@@ -107,7 +121,7 @@ export default function ExportButton() {
             {path}
           </p>
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-end p-2">
           <Button onClick={() => handleSelect()}>Exportar</Button>
         </div>
       </Dialog>
