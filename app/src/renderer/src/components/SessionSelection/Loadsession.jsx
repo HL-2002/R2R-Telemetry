@@ -68,6 +68,8 @@ export function LoadSession({ multiple = false, toDelete = false, setMode }) {
       })
       // detelete from interface
       setData(data.filter((item) => !selected.includes(item.id)))
+      // filter the selected sessions
+      setSelected(selected.filter((item) => !selected.includes(item)))
       //  if the session is the active session, remove it from the session store to update the interface
       if (session.id == BigInt(selected[0])) {
         setSession(null)
