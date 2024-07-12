@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast'
 
 // Constants
 import constants from './constants.js'
-const { TypesEvents } = constants
+const { TypesEvents,AllgraphSafe } = constants
 
 // Component imports
 import RTCollection from './components/RTCollection.jsx'
@@ -113,16 +113,24 @@ function App() {
   // some global states
   const Axis = useSelectionStore((state) => state.Axis)
   const entries = useSessionStore((state) => state.Entry)
-  const selection = useSelectionStore((state) => state.selections)
-  const [safetySelection, setSafetySelection] = useState([])
-  const session = useSessionStore((state) => state.session)
   const runs = useSessionStore((state) => state.Runs)
+  const session = useSessionStore((state) => state.session)
+// global states for the performance and safety selections
+  const safeSelection = useSelectionStore((state) => state.safeSelections)
+  const selection = useSelectionStore((state) => state.selections)
+
+
+
+
+  const [safetySelection, setSafetySelection] = useState([])
+
 
   // methods to update the global states
   const addRunGlobal = useSessionStore((state) => state.addRun)
   const setEntries = useSessionStore((state) => state.setEntry)
   const setRunGlobal = useSessionStore((state) => state.setRuns)
   const setSelection = useSelectionStore((state) => state.setSelection)
+  const setSafeSelection = useSelectionStore((state) => state.setSafeSelection)
 
 
   // For app control
@@ -158,6 +166,7 @@ function App() {
     // get the Default selection from the default graph based on the session type
     const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
     setSelection(sele)
+    setSafeSelection(AllgraphSafe)
     // TODO: Change safetyEntries for the actual safety selection with the components
     setSafetySelection(safetyEntries)
 
@@ -412,7 +421,7 @@ function getMin(runs) {
           {session?.description} - {session?.type} : Intento Nro {run + 1}
         </h1>
         <div className="flex">
-          <DataSelection />
+          <DataSelection mode={mode} />
           <Button
             disabled={init || session === null || !(selection.length > 0)}
             onClick={() => {
@@ -439,7 +448,7 @@ function getMin(runs) {
           {session?.description} - {session?.type}
         </h1>
         <div className="flex">
-          <DataSelection />
+          <DataSelection mode={mode} />
           <ExportButton />
         </div>
       </div>
