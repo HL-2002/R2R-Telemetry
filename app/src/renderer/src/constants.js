@@ -22,5 +22,14 @@ export default {
     }
   ],
 
-  Allgraph: ['velocity', 'rpms', 'gear', 'lateral_g', 'throttle', 'brake', 'steering_angle']
+  Allgraph: ['velocity', 'rpms', 'gear', 'lateral_g', 'throttle', 'brake', 'steering_angle'],
+  AllgraphSafe: [
+    'tire_pressure_fl',
+    'tire_pressure_fr',
+    'tire_pressure_rl',
+    'tire_pressure_rr',
+    'fuel',
+    'temperature',
+    'oil_pressure'
+  ]
 }
