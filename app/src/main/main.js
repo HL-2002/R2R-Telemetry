@@ -4,7 +4,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import read from './reader.js'
-import { fs } from 'node:fs/promises'
+import fs from 'node:fs/promises'
 
 // imports models of db
 import sessionModel from './models/session.js'
@@ -142,11 +142,24 @@ async function getAllsessions() {
   return (await sessionModel.readALL()).rows
 }
 
-
 // HANDLE EVENTS FROM RENDERER
-ipcMain.handle('export', async (event, {entries, path, name}) => {
+ipcMain.handle('export', async (event, { entries, path, name }) => {
   // Get headers
-  console.log(path)
+  const headers = Object.keys(entries[0].entries[0]).join(',')
+
+  // format entries TO CSV
+  const csv = entries
+    .map((entry) => {
+      return entry.entries.map((e) => Object.values(e).join(',')).join('\n')
+    })
+    .join('\n')
+
+  try {
+    await fs.writeFile(`${path}/${name}.csv`, `${headers}\n${csv}`)
+    return { success: true }
+  } catch (e) {
+    return { success: false }
+  }
 })
 
 ipcMain.handle('getAllsessions', getAllsessions)
@@ -157,7 +170,6 @@ ipcMain.handle('getSession', async (event, id) => {
 ipcMain.on('deleteSession', async (event, id) => {
   await sessionModel.remove(id)
 })
-
 
 ipcMain.handle('CreateSession', async (event, sessionInfo) => {
   const date = new Date().toLocaleDateString()
