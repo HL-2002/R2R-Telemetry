@@ -119,8 +119,6 @@ function App() {
   const safeSelection = useSelectionStore((state) => state.safeSelections)
   const selection = useSelectionStore((state) => state.selections)
 
-  const [safetySelection, setSafetySelection] = useState([])
-
   // methods to update the global states
   const addRunGlobal = useSessionStore((state) => state.addRun)
   const setEntries = useSessionStore((state) => state.setEntry)
@@ -147,11 +145,6 @@ function App() {
   let minRunId = getMin(runs)
 
   // HOOKS
-
-  useEffect(() => {
-    if (mode == 'read') setSafetySelection(safeSelection)
-  }, [safeSelection])
-
   // Update run global state upon session change
   useEffect(() => {
     // Reset entries
@@ -159,6 +152,7 @@ function App() {
     // If there is no session, reset some  states
     if (session == null) {
       setRunGlobal([])
+      setSafeSelection([])
       setRun(0)
       return
     }
@@ -167,8 +161,6 @@ function App() {
     const sele = TypesEvents.find((item) => item.name === session?.type)?.graph || []
     setSelection(sele)
     setSafeSelection(AllgraphSafe)
-    // TODO: Change safetyEntries for the actual safety selection with the components
-    setSafetySelection(safetyEntries)
 
     // get the runs for the session and set the global state
     api.getRunBySession(session.id).then((res) => {
@@ -197,7 +189,7 @@ function App() {
     }
     // Refresh component
     setUpdateTime(Date.now())
-  }, [run, init, selection, safetySelection, Axis, refresh])
+  }, [run, init, selection, safeSelection, Axis, refresh])
 
   // Every time the run changes or App is terminated, update the run in the database and update the UI
   useEffect(() => {
@@ -328,13 +320,14 @@ function App() {
           data: serializedEntries[selection[j]]
         })
       }
-      for (let j = 0; j < safetySelection.length; j++) {
+      for (let j = 0; j < safeSelection.length; j++) {
         safetyData.datasets.push({
           runId: Number(entries[i].run_id),
-          label: safetySelection[j],
-          data: serializedEntries[safetySelection[j]]
+          label: safeSelection[j],
+          data: serializedEntries[safeSelection[j]]
         })
       }
+
       // Update X labels (only needed once)
       if (serializedEntries.time.length > performanceTimeLabels.length) {
         performanceTimeLabels = serializedEntries.time
@@ -346,7 +339,7 @@ function App() {
 
     // Call the selection and axis update useEffect to set the labels and filter the data
     setRefresh(!refresh)
-  }, [entries, selection, safetySelection])
+  }, [entries, selection, safeSelection])
 
   // FUNCTIONS
   function updateData(newData, data) {
@@ -488,10 +481,11 @@ function App() {
               axis={Axis}
               height={mainHeight}
               frequency={frequency}
-              notSafety={safetyEntries.length ? 0 : 1}
+              notSafety={safeSelection.length ? 0 : 1}
               selection={selection}
               selectedRunAmount={entries.length}
               minRunId={minRunId}
+              mode={mode}
             />
             <RTCollection
               data={safetyData}
@@ -500,9 +494,10 @@ function App() {
               height={mainHeight}
               frequency={frequency}
               notSafety={0}
-              selection={safetySelection}
+              selection={safeSelection}
               selectedRunAmount={entries.length}
               minRunId={minRunId}
+              mode={mode}
             />
           </div>
         </div>
