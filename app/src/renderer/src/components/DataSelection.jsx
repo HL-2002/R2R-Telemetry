@@ -4,28 +4,36 @@ import { useSessionStore } from '../context/SessionContext'
 import { useSelectionStore } from '../context/SelectionContext'
 import { useState, useRef, useEffect } from 'react'
 import constants from '../constants'
-const { Allgraph } = constants
+const { Allgraph, AllgraphSafe } = constants
 
-export function DataSelection() {
+export function DataSelection({ mode }) {
   const session = useSessionStore((state) => state.session)
   // create a reference to the dialog
   const ref = useRef(null)
   // Get the current selections and the setSelection function from the store
   const selections = useSelectionStore((state) => state.selections)
+  const safeSelections = useSelectionStore((state) => state.safeSelections)
+
   const setSelection = useSelectionStore((state) => state.setSelection)
+  const setSafeSelection = useSelectionStore((state) => state.setSafeSelection)
   const setAxisStore = useSelectionStore((state) => state.setAxis)
   const [current, setCurrent] = useState([])
   const [Available, setAvailable] = useState(Allgraph)
+  const [safeAvailable, setSafeAvailable] = useState(AllgraphSafe)
   const [axis, setAxis] = useState('time')
-
   // Update the current selection when the selections change
   useEffect(() => {
+    if (mode == 'read') {
+      // rendere selections and safrAvailable
+      setCurrent([...selections, ...safeSelections])
+      return
+    }
     setCurrent(selections)
-  }, [selections])
-
+  }, [selections, mode])
   // Update the available selection when the current selection changes
   useEffect(() => {
     setAvailable(Allgraph.filter((item) => !current.includes(item)))
+    if (mode == 'read') setSafeAvailable(AllgraphSafe.filter((item) => !current.includes(item)))
   }, [current])
 
   // Handle the selection of an item
@@ -39,8 +47,13 @@ export function DataSelection() {
 
   // Handle the click event
   const handleClick = () => {
-    setSelection(current)
+    const performance = current.filter((item) => Allgraph.includes(item))
+    setSelection(performance)
     setAxisStore(axis)
+    if (mode == 'read') {
+      const safety = current.filter((item) => AllgraphSafe.includes(item))
+      setSafeSelection(safety)
+    }
   }
 
   return (
@@ -57,7 +70,7 @@ export function DataSelection() {
           // Show the dialog
           ref.current.showModal()
         }}
-        disabled={session===null}
+        disabled={session === null}
       >
         Cambiar selección
       </button>
@@ -103,7 +116,7 @@ export function DataSelection() {
           </div>
 
           <div>
-            <h2 className="text-xl    text-[#dee4ea] font-bold">Puntos Disponibles</h2>
+            <h2 className="text-xl    text-[#dee4ea] font-bold">Puntos Disponibles Redimiento</h2>
             <ul className="flex flex-col min-h-60 max-h-60  gap-1 overflow-y-scroll scroll-hidden">
               {Available.map((item) => {
                 return (
@@ -117,6 +130,25 @@ export function DataSelection() {
                 )
               })}
             </ul>
+            {mode == 'read' ? (
+              <>
+                <h2 className="text-xl  text-[#dee4ea] font-bold">Puntos Disponibles Seguridad</h2>
+
+                <ul className="flex flex-col min-h-60 max-h-60 gap-1 overflow-y-scroll scroll-hidden">
+                  {safeAvailable.map((item) => {
+                    return (
+                      <li
+                        className="text-[#ea3344]  text-lg hover:cursor-pointer hover:text-[#dee4ea] "
+                        key={item}
+                        onClick={() => handleSelect(item)}
+                      >
+                        {item}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </>
+            ) : null}
 
             <button
               className="  
