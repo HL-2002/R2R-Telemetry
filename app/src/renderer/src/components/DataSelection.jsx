@@ -24,7 +24,7 @@ export function DataSelection({ mode }) {
   // Update the current selection when the selections change
   useEffect(() => {
     if (mode == 'read') {
-      // rendere selections and safrAvailable
+      // render selections and safeAvailable
       setCurrent([...selections, ...safeSelections])
       return
     }

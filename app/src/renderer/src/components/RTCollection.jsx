@@ -1,6 +1,7 @@
 // Collection of plots, so that their size can be adjusted together
 import { useState, useEffect } from 'react'
 import { Line } from 'react-chartjs-2'
+import { useSessionStore } from '../context/SessionContext'
 // TODO: Need to import necessary modules for Chart.js only
 import { Chart } from 'chart.js/auto'
 import annotationPlugin from 'chartjs-plugin-annotation'
@@ -30,8 +31,19 @@ Props:
 - height: int (vh)
 - frequency: int (ms)
 - notSafety: boolean (true if there are no safety plots)
+- selection: [String] (list of selected datasets)
+- selectedRunAmount: int (amount of selected runs)
+- minRunId: int (minimum run id)
+- mode: string (log or read)
 */
-function RTCollection({ data, type, axis, height, frequency, notSafety, selection, selectedRunAmount, minRunId }) {
+/* 
+TODO: needs optimization, component is re-rendered many times (5, to be exact) 
+each time a new run is selected, instead of a single time. Can logged into console with 
+console.log(configList) before returning the html code.
+*/
+function RTCollection({ data, type, axis, height, frequency, notSafety, selection, selectedRunAmount, minRunId, mode }) {
+  // Session state
+  const session = useSessionStore((state) => state.session)
   // Time state
   let [time, setTime] = useState(Date.now())
 
@@ -45,14 +57,41 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
   // Plot's colors (based on max amount of selected runs)
   const borderColors = ['RGBA(236, 109, 45, 1)', 'RGBA(55, 162, 235, 1)', 'RGBA(255, 205, 86, 1)', 'RGBA(255, 75, 110, 1)']
   const backgroundColors = ['RGBA(236, 109, 45, 0.41)', 'RGBA(55, 162, 235, 0.41)', 'RGBA(255, 205, 86, 0.41)', 'RGBA(255, 75, 110, 0.41)']
+  
+  // Run legend
+  const legend = {
+    labels: {
+      // Generate labels for each dataset
+      generateLabels: function (chart) {
+        var data = chart.data;
+        // For each dataset, generate a label following the label interface
+        var legends = data.datasets.map(function(dataset, i) {
+          return {
+            // TODO: Delete number casting
+            text: `Intento ${dataset.runId + 1 - minRunId}`,
+            fontColor: dataset.borderColor,
+            fillStyle: (!Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor : dataset.backgroundColor[0]),
+            hidden: !chart.isDatasetVisible(i),
+            lineCap: dataset.borderCapStyle,
+            lineDash: dataset.borderDash,
+            lineDashOffset: dataset.borderDashOffset,
+            lineJoin: dataset.borderJoinStyle,
+            lineWidth: dataset.borderWidth,
+            strokeStyle: dataset.borderColor,
+            pointStyle: dataset.pointStyle,
+          }
+        }, this)
+        return legends
+      }
+    },
+    // Disable data toggling
+    onClick: (e) => null
+  }
 
-  // Handle tire_pressure entries
-  const findTirePressure = (dataset) => dataset['label'] === 'tire_pressure_fl'
-  let t = data.datasets.findIndex(findTirePressure)
-  let hasPressure = false
-
+  // Handle tire_pressure entries  
+  let pressureSelection = selection.filter((label) => label.includes('tire_pressure'))
   // Collect and format tire_pressure datasets, then skip them
-  if (t !== -1) {
+  if (pressureSelection.length > 0) {
     // Data initialization
     let plotData = {
       labels: data.labels,
@@ -81,7 +120,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
 
     // Set tire pressure data based on run amount
     if (selectedRunAmount <= 1) {
-      plotData.datasets = [data.datasets[t], data.datasets[t + 1], data.datasets[t + 2], data.datasets[t + 3]]
+      plotData.datasets = data.datasets.filter((dataset) => pressureSelection.includes(dataset.label))
 
       // Change legend labels to tire pressure fl, fr, rl, rr
       optionsSet.plugins.legend = {
@@ -116,23 +155,40 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
     // If there's more than one run selected
     else {
       // Filter data
-      let tirePressureData = data.datasets.filter((dataset) => dataset.label.includes('tire_pressure'))
+      let tirePressureData = data.datasets.filter((dataset) => pressureSelection.includes(dataset.label))
 
       // Average datasets into one
-      // Iterate over tire pressure data per each run (4 datasets per run)
-      for (let i = 0; i < tirePressureData.length/4; i++) {
+      let k = pressureSelection.length
+      let sum = 0
+      // Iterate over each dataset per run
+      for (let i = 0; i < tirePressureData.length/k; i++) {
         let dataset = {
-          runId: tirePressureData[i*4].runId,
+          runId: tirePressureData[i*k].runId,
           label: `tire_pressure ${i+1}`,
           data: []
         }
+        
         // Get pressure sets for each run
-        let pressureSet = tirePressureData.slice(i*4, i*4 + 4)
+        let pressureSet = tirePressureData.slice(i*k, i*k + k)
 
-        // Average them
+        // Iterate over each set's data
         for (let j=0; j < data.labels.length; j++) {
-          dataset.data.push((pressureSet[0].data[j] + pressureSet[1].data[j] + 
-                             pressureSet[2].data[j] + pressureSet[3].data[j]) / 4)
+          sum = 0
+          // Average the data across the set's runs
+          /* 
+          NOTE: limit is pressureSet.length instead of k, as k never changes per iteration,
+          but the length of the sets do, as each change in the selection makes App to serialize
+          each run's entries and update the data one by one, resulting in a pressureSet that changes
+          at the first iterations of the serialization.
+
+          This is undesirable behavior to say the least, and its why it's crucial to extract all 
+          data processing and formatting this plot does into its own module for App.jsx to use, so that
+          the plot receives the data as is and only plots based on the configs given.
+          */
+          for (let l=0; l < pressureSet.length; l++) {
+            sum += pressureSet[l].data[j]
+          }
+          dataset.data.push(sum / k)
         }
 
         // Push to plotData
@@ -140,50 +196,19 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
       }
 
       // Change legend labels to the run number
-      optionsSet.plugins.legend = {
-        labels: {
-          // Generate labels for each dataset
-          generateLabels: function (chart) {
-            var data = chart.data;
-            // For each dataset, generate a label following the label interface
-            var legends = data.datasets.map(function(dataset, i) {
-              return {
-                // TODO: Delete number casting
-                text: `Intento ${dataset.runId + 1 - minRunId}`,
-                fontColor: dataset.borderColor,
-                fillStyle: (!Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor : dataset.backgroundColor[0]),
-                hidden: !chart.isDatasetVisible(i),
-                lineCap: dataset.borderCapStyle,
-                lineDash: dataset.borderDash,
-                lineDashOffset: dataset.borderDashOffset,
-                lineJoin: dataset.borderJoinStyle,
-                lineWidth: dataset.borderWidth,
-                strokeStyle: dataset.borderColor,
-                pointStyle: dataset.pointStyle,
-              }
-            }, this)
-            return legends
-          }
-        },
-        // Disable data toggling
-        onClick: (e) => null
-      }
+      optionsSet.plugins.legend = legend
     }
     
     // Push data and options to configList
     configList.push({ data: plotData, options: optionsSet })
-
-    // Skip tire pressure datasets when setting the next plots
-    t += 4
-    // Boolean to size the divs that contain the plots
-    hasPressure = true
-
-  } else {
-    t = 0
+    
   }
 
   // Set data for each plot, iterating over the selection
-  for (let i = t; i < n; i++) {
+  for (let i = 0; i < n; i++) {
+      // Skip tire_pressure entries
+      if (selection[i].includes('tire_pressure')) continue
+
       // Set data for each plot
       let plotData = {
         labels: data.labels,
@@ -192,6 +217,11 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
 
       // Set options for each plot
       let optionsSet = configInit(plotData.datasets[0].label, axis)
+
+      // Add legend to 1st safety plot if there's no tire_pressure in selection
+      if (selection.includes('fuel') && pressureSelection.length < 1 && i === 0) {
+        optionsSet.plugins.legend = legend
+      }
 
       // Add 0 degrees line for steering_angle
       if (data.datasets[i].label === 'steering_angle') {
@@ -240,7 +270,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
   useEffect(() => {
     let interval = undefined
     // Set interval only if there are no selected runs
-    if (selectedRunAmount < 1) {
+    if (session != null && mode === 'log') {
       interval = setInterval(() => {
         setTime(Date.now())
       }, frequency)
@@ -260,7 +290,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
         id="RTCollection"
         key="RTCollection"
         // Width is adjusted based the existence of safety plots
-        style={{ width: 50 + 50 * notSafety + '%', height: height + 'vh' }}
+        style={{ 'minWidth': 50 + 50 * notSafety + '%', height: height + 'vh' }}
         className='pr-4'
       >
         <h1 className='font-bold'>{title}</h1>
@@ -268,7 +298,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
           // Height is divided by the number of plots, minus the space taken by the title
           <div
             key= {config.data.datasets[0].label}
-            style={{ height: (height - 2) / (n - 3 * hasPressure) + 'vh' }}
+            style={{ height: (height - 2) / (n) + 'vh' }}
           >
             <Line data={config.data} options={config.options} />
           </div>
