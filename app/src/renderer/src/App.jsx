@@ -5,7 +5,7 @@ import { Toaster } from 'react-hot-toast'
 
 // Constants
 import constants from './constants.js'
-const { TypesEvents,AllgraphSafe } = constants
+const { TypesEvents, AllgraphSafe } = constants
 
 // Component imports
 import RTCollection from './components/RTCollection.jsx'
@@ -115,15 +115,11 @@ function App() {
   const entries = useSessionStore((state) => state.Entry)
   const runs = useSessionStore((state) => state.Runs)
   const session = useSessionStore((state) => state.session)
-// global states for the performance and safety selections
+  // global states for the performance and safety selections
   const safeSelection = useSelectionStore((state) => state.safeSelections)
   const selection = useSelectionStore((state) => state.selections)
 
-
-
-
   const [safetySelection, setSafetySelection] = useState([])
-
 
   // methods to update the global states
   const addRunGlobal = useSessionStore((state) => state.addRun)
@@ -131,7 +127,6 @@ function App() {
   const setRunGlobal = useSessionStore((state) => state.setRuns)
   const setSelection = useSelectionStore((state) => state.setSelection)
   const setSafeSelection = useSelectionStore((state) => state.setSafeSelection)
-
 
   // For app control
   const [pause, setPause] = useState(false)
@@ -149,9 +144,14 @@ function App() {
   const [time, setTime] = useState(null)
 
   // Some variables
-  let minRunId = getMin(runs) 
+  let minRunId = getMin(runs)
 
   // HOOKS
+
+  useEffect(() => {
+    if (mode == 'read') setSafetySelection(safeSelection)
+  }, [safeSelection])
+
   // Update run global state upon session change
   useEffect(() => {
     // Reset entries
@@ -317,18 +317,18 @@ function App() {
     safetyData.datasets = []
 
     // Iterate over entries to update the data
-    for (let i=0; i < entries.length; i++){
+    for (let i = 0; i < entries.length; i++) {
       let serializedEntries = serializeEntries(entries[i].entries)
-      
-      // Push datasets based on selection 
-      for (let j=0; j < selection.length; j++){
+
+      // Push datasets based on selection
+      for (let j = 0; j < selection.length; j++) {
         performanceData.datasets.push({
           runId: Number(entries[i].run_id),
           label: selection[j],
           data: serializedEntries[selection[j]]
         })
       }
-      for (let j=0; j < safetySelection.length; j++){
+      for (let j = 0; j < safetySelection.length; j++) {
         safetyData.datasets.push({
           runId: Number(entries[i].run_id),
           label: safetySelection[j],
@@ -336,7 +336,7 @@ function App() {
         })
       }
       // Update X labels (only needed once)
-      if (serializedEntries.time.length > performanceTimeLabels.length){
+      if (serializedEntries.time.length > performanceTimeLabels.length) {
         performanceTimeLabels = serializedEntries.time
         safetyTimeLabels = performanceTimeLabels
         performanceDistanceLabels = serializedEntries.distance
@@ -347,7 +347,6 @@ function App() {
     // Call the selection and axis update useEffect to set the labels and filter the data
     setRefresh(!refresh)
   }, [entries, selection, safetySelection])
-
 
   // FUNCTIONS
   function updateData(newData, data) {
@@ -392,24 +391,23 @@ function App() {
     return serializedEntries
   }
 
-function getMin(runs) {
-  if (runs.length === 0) return 0
+  function getMin(runs) {
+    if (runs.length === 0) return 0
 
-  let minRunId = 0
+    let minRunId = 0
 
-  for (let i=0; i < runs.length; i++) {
-    // Set the minRunId as the first dataset's runId
-    if (i===0) {
-      minRunId = runs[i].id
+    for (let i = 0; i < runs.length; i++) {
+      // Set the minRunId as the first dataset's runId
+      if (i === 0) {
+        minRunId = runs[i].id
+      }
+      // Set the minRunId if it's greater than the current dataset runId
+      else if (runs[i].id < minRunId) {
+        minRunId = runs[i].id
+      }
     }
-    // Set the minRunId if it's greater than the current dataset runId
-    else if (runs[i].id < minRunId){
-      minRunId = runs[i].id
-    }
+    return Number(minRunId)
   }
-  return Number(minRunId)
-}
-
 
   // APP LAYOUT
   // Decide which control header to show
