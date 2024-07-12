@@ -6,7 +6,9 @@ const useSelectionStore = create((set) => ({
 
   // selections is an array of objects that represent the selected data points
   selections: [],
+  safeSelections: [],
   setSelection: (selection) => set({ selections: selection }),
+  setSafeSelection: (selection) => set({ safeSelections: selection }),
   // Axis is the axis that the user is currently selecting
   Axis: 'time',
   setAxis: (axis) => set({ Axis: axis })
