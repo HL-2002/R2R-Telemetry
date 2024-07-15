@@ -91,7 +91,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
   let pressureSelection = selection.filter((label) => label.includes('tire_pressure'))
   // Set term to adjust height based on tire_pressure entries
   let pressureTerm = pressureSelection.length > 0 ? pressureSelection.length - 1 : 0
-  // Collect and format tire_pressure datasets, then skip them
+  // Collect and format tire_pressure datasets
   if (pressureSelection.length > 0) {
     // Data initialization
     let plotData = {
@@ -119,9 +119,12 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
     optionsSet.plugins.legend = true
     optionsSet.scales.x = { display: false }
 
+    // Filter data
+    let tirePressureData = data.datasets.filter((dataset) => pressureSelection.includes(dataset.label))
+
     // Set tire pressure data based on run amount
     if (selectedRunAmount <= 1) {
-      plotData.datasets = data.datasets.filter((dataset) => pressureSelection.includes(dataset.label))
+      plotData.datasets = tirePressureData
 
       // Change legend labels to tire pressure fl, fr, rl, rr
       optionsSet.plugins.legend = {
@@ -155,9 +158,6 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
     }
     // If there's more than one run selected
     else {
-      // Filter data
-      let tirePressureData = data.datasets.filter((dataset) => pressureSelection.includes(dataset.label))
-
       // Average datasets into one
       let k = pressureSelection.length
       let sum = 0
@@ -185,7 +185,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
           This is undesirable behavior to say the least, and its why it's crucial to extract all 
           data processing and formatting this plot does into its own module for App.jsx to use, so that
           the plot receives the data as is and only plots based on the configs given.
-          */
+          */ 
           for (let l=0; l < pressureSet.length; l++) {
             sum += pressureSet[l].data[j]
           }
@@ -198,10 +198,21 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
 
       // Change legend labels to the run number
       optionsSet.plugins.legend = legend
+      
     }
     
     // Push data and options to configList
-    configList.push({ data: plotData, options: optionsSet })
+    /* 
+      NOTE: Needs validation for empty data, because even though the plotData is initialized,
+      it's possible that the data is empty, which will result in a plot with no data, and a
+      console error.
+      
+      This is quite a curious behavior, as the data is actually coming from App.jsx correctly,
+      but for some reason, amidst the rendering of this component, the data is lost or not updated
+      somehow, again highlighting the importance of separating the data processing and formatting
+      from the plotting itself.
+    */
+    if (tirePressureData.length > 0) configList.push({ data: plotData, options: optionsSet })
     
   }
 
