@@ -34,14 +34,13 @@ Props:
 - selection: [String] (list of selected datasets)
 - selectedRunAmount: int (amount of selected runs)
 - minRunId: int (minimum run id)
-- mode: string (log or read)
 */
 /* 
 TODO: needs optimization, component is re-rendered many times (5, to be exact) 
-each time a new run is selected, instead of a single time. Can logged into console with 
+each time a new run is selected, instead of a single time. Can log into console with 
 console.log(configList) before returning the html code.
 */
-function RTCollection({ data, type, axis, height, frequency, notSafety, selection, selectedRunAmount, minRunId, mode }) {
+function RTCollection({ data, type, axis, height, frequency, notSafety, selection, selectedRunAmount, minRunId }) {
   // Session state
   const session = useSessionStore((state) => state.session)
   // Time state
@@ -67,8 +66,8 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
         // For each dataset, generate a label following the label interface
         var legends = data.datasets.map(function(dataset, i) {
           return {
-            // TODO: Delete number casting
-            text: `Intento ${dataset.runId + 1 - minRunId}`,
+            // Label is set to the run number whenever run
+            text: `Intento ${dataset.runId + (1 - minRunId) * Number(dataset.runId > 0)}`,
             fontColor: dataset.borderColor,
             fillStyle: (!Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor : dataset.backgroundColor[0]),
             hidden: !chart.isDatasetVisible(i),
@@ -90,6 +89,8 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
 
   // Handle tire_pressure entries  
   let pressureSelection = selection.filter((label) => label.includes('tire_pressure'))
+  // Set term to adjust height based on tire_pressure entries
+  let pressureTerm = pressureSelection.length > 0 ? pressureSelection.length - 1 : 0
   // Collect and format tire_pressure datasets, then skip them
   if (pressureSelection.length > 0) {
     // Data initialization
@@ -219,7 +220,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
       let optionsSet = configInit(plotData.datasets[0].label, axis)
 
       // Add legend to 1st safety plot if there's no tire_pressure in selection
-      if (selection.includes('fuel') && pressureSelection.length < 1 && i === 0) {
+      if (selection.includes('fuel') && selectedRunAmount > 0 && pressureSelection.length < 1 && i === 0) {
         optionsSet.plugins.legend = legend
       }
 
@@ -270,7 +271,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
   useEffect(() => {
     let interval = undefined
     // Set interval only if there are no selected runs
-    if (session != null && mode === 'log') {
+    if (session != null && selectedRunAmount === 0) {
       interval = setInterval(() => {
         setTime(Date.now())
       }, frequency)
@@ -298,7 +299,7 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
           // Height is divided by the number of plots, minus the space taken by the title
           <div
             key= {config.data.datasets[0].label}
-            style={{ height: (height - 2) / (n) + 'vh' }}
+            style={{ height: (height - 2) / (n - pressureTerm) + 'vh' }}
           >
             <Line data={config.data} options={config.options} />
           </div>

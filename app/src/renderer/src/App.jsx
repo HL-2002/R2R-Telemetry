@@ -485,7 +485,6 @@ function App() {
               selection={selection}
               selectedRunAmount={entries.length}
               minRunId={minRunId}
-              mode={mode}
             />
             <RTCollection
               data={safetyData}
@@ -497,7 +496,6 @@ function App() {
               selection={safeSelection}
               selectedRunAmount={entries.length}
               minRunId={minRunId}
-              mode={mode}
             />
           </div>
         </div>
