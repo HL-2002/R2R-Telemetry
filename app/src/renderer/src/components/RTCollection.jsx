@@ -227,38 +227,45 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
         datasets: data.datasets.filter((dataset) => dataset.label === selection[i])
       }
 
-      // Set options for each plot
-      let optionsSet = configInit(plotData.datasets[0].label, axis)
+      // Set options for each plot and push config if the dataset is not empty
+      /* 
+        NOTE: Needs same validation as tire_pressure entries, as the data is lost or not updated,
+        so it's yet another reason to separate the data processing and formatting from the plotting.
+      */
+      if (plotData.datasets.length > 0) {
+        let optionsSet = configInit(plotData.datasets[0].label, axis)
 
-      // Add legend to 1st safety plot if there's no tire_pressure in selection
-      if (selection.includes('fuel') && selectedRunAmount > 0 && pressureSelection.length < 1 && i === 0) {
-        optionsSet.plugins.legend = legend
-      }
+        // Add legend to 1st safety plot if there's no tire_pressure in selection
+        if (selection.includes('fuel') && selectedRunAmount > 0 && pressureSelection.length < 1 && i === 0) {
+          optionsSet.plugins.legend = legend
+        }
 
-      // Add 0 degrees line for steering_angle
-      if (data.datasets[i].label === 'steering_angle') {
-        optionsSet.plugins.annotation = {
-          annotations: {
-            line: {
-              drawTime: 'beforeDatasetsDraw',
-              type: 'line',
-              borderColor: 'white',
-              borderWidth: 0.5,
-              borderDash: [1, 0],
-              scaleID: 'y',
-              value: 0
+        // Add 0 degrees line for steering_angle
+        if (data.datasets[i].label === 'steering_angle') {
+          optionsSet.plugins.annotation = {
+            annotations: {
+              line: {
+                drawTime: 'beforeDatasetsDraw',
+                type: 'line',
+                borderColor: 'white',
+                borderWidth: 0.5,
+                borderDash: [1, 0],
+                scaleID: 'y',
+                value: 0
+              }
             }
           }
         }
-      }
 
-      // Disable x-axis for all but the last plot
-      if (i !== n - 1) {
-        optionsSet.scales.x = { display: false }
-      }
+        // Disable x-axis for all but the last plot
+        if (i !== n - 1) {
+          optionsSet.scales.x = { display: false }
+        }
 
-      // Push data and options to configList
-      configList.push({ data: plotData, options: optionsSet })
+        // Push data and options to configList
+        configList.push({ data: plotData, options: optionsSet })
+      }
+      
   }
 
   // Format each plot's line style
