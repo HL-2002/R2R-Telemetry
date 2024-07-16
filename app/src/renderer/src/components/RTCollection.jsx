@@ -115,12 +115,13 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
       }
     }
 
-    // Setup of additional options
-    optionsSet.plugins.legend = true
-    optionsSet.scales.x = { display: false }
-
     // Filter data
     let tirePressureData = data.datasets.filter((dataset) => pressureSelection.includes(dataset.label))
+
+    // Setup of additional options
+    optionsSet.plugins.legend = true
+    // Set x axis if the only data is tire_pressure
+    if (tirePressureData.length === data.datasets.length) optionsSet.scales.x = configAxis(axis)
 
     // Set tire pressure data based on run amount
     if (selectedRunAmount <= 1) {
@@ -216,6 +217,18 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
     
   }
 
+  // Find last item in selection that's not tire_pressure to add legend
+  let lastLabel = ''
+  // Iterate only if the selection includes safety entries
+  if (selection.includes('fuel') || selection.includes('oil_pressure') || selection.includes('temperature')) {
+    for (let i = n - 1; i >= 0; i--) {
+      if (!selection[i].includes('tire_pressure')) {
+        lastLabel = selection[i]
+        break
+      }
+    }
+  }
+
   // Set data for each plot, iterating over the selection
   for (let i = 0; i < n; i++) {
       // Skip tire_pressure entries
@@ -258,8 +271,8 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
         }
 
         // Disable x-axis for all but the last plot
-        if (i !== n - 1) {
-          optionsSet.scales.x = { display: false }
+        if (i === n - 1 || plotData.datasets[0].label === lastLabel) {
+          optionsSet.scales.x = configAxis(axis)
         }
 
         // Push data and options to configList
@@ -344,7 +357,7 @@ function configInit(label, axis) {
     normalized: true,
     scales: {
       y: configScale(label),
-      x: configAxis(axis)
+      x: { display: false }
     },
     elements: {
       point: {
