@@ -92,37 +92,43 @@ export function LoadSession({ multiple = false, toDelete = false, setMode, dialo
   }
 
   return (
-    <div className="p-8 max-w-xl relative">
-      <ul className="flex flex-wrap max-h-80 gap-4 p-2 overflow-x-hidden overflow-y-scroll scroll-hidden">
-        {data
-          ? data.map((data) => {
-              return (
-                <li
-                  onClick={() => {
-                    handleSelect(data.id)
-                  }}
-                  key={data.id}
-                  className={`p-2 ${!selected.includes(data.id) ? 'bg-[#ea3344]' : 'bg-[#ec6d2d]'} rounded
-          hover:bg-[#ec6d2d] transition-colors
-          hover:cursor-pointer
-            `}
-                >
-                  <h3 className="text-lg font-bold text-[#dee4ea]">{data.description}</h3>
-                  <p className="text-[#dee4ea]">Fecha: {data.date}</p>
-                  <p className="text-[#dee4ea]">Hora: {data.time}</p>
-                  <p className="text-[#dee4ea]">Tipo: {data.type}</p>
-                </li>
-              )
-            })
-          : 'No hay sesiones cargadas'}
-      </ul>
-      <button
-        onClick={handleClick}
-        className="absolute right-7 -bottom-4 p-2 bg-[#e94926] rounded text-[#dee4ea] hover:bg-[#ec6d2d]"
-      >
-        {/* if is multiple is 'comparar', if is toDelete 'borrar', else 'cargar' */}
-        {multiple ? 'Comparar' : toDelete ? 'Borrar' : 'Cargar'}
-      </button>
-    </div>
+    <> 
+      <h3 className="text-xl font-bold text-[#dee4ea]">
+        {toDelete ? 'Borrado de sesiones': 'Cargado de sesiones'}
+      </h3>
+      <div className="p-8 pt-2 max-w-xl relative">
+        <ul className="flex flex-wrap max-h-80 gap-4 p-2 overflow-x-hidden overflow-y-scroll scroll-hidden">
+          {data
+            ? data.map((data) => {
+                return (
+                  <li
+                    onClick={() => {
+                      handleSelect(data.id)
+                    }}
+                    key={data.id}
+                    className={`p-2 ${!selected.includes(data.id) ? 'bg-[#ea3344]' : 'bg-[#ec6d2d]'} rounded
+            hover:bg-[#ec6d2d] transition-colors
+            hover:cursor-pointer
+              `}
+                  >
+                    <h3 className="text-lg font-bold text-[#dee4ea]">{data.description}</h3>
+                    <p className="text-[#dee4ea]">Fecha: {data.date}</p>
+                    <p className="text-[#dee4ea]">Hora: {data.time}</p>
+                    <p className="text-[#dee4ea]">Tipo: {data.type}</p>
+                  </li>
+                )
+              })
+            : 'No hay sesiones cargadas'}
+        </ul>
+        <button
+          onClick={handleClick}
+          className="absolute right-7 -bottom-4 p-2 bg-[#e94926] rounded text-[#dee4ea] hover:bg-[#ec6d2d]"
+        >
+          {/* if is multiple is 'comparar', if is toDelete 'borrar', else 'cargar' */}
+          {multiple ? 'Comparar' : toDelete ? 'Borrar' : 'Cargar'}
+        </button>
+      </div>
+    </>
+    
   )
 }

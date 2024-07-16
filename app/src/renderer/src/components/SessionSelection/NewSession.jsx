@@ -54,77 +54,81 @@ export function NewSession({ setMode, dialogRef }) {
   }
 
   return (
-    <div className="grid grid-cols-3 ">
-      <div
-        className="
-  p-4
-  flex flex-col
-  border-r border-r-[#454f59]
-"
-      >
-        {
-          //  map the types of events to create the buttons
-          TypesEvents.map((item) => {
-            return (
-              <ButtonEventMenu
-                key={item.name}
-                selected={selected}
-                setSeleted={setSelected}
-                name={item.name}
-              />
-            )
-          })
-        }
-      </div>
-
-      <dir
-        className="
-      p-4
-      flex flex-col
-      relative
-
-      "
-      >
-        <h3 className="text-xl text-[#dee4ea] font-bold">Data point</h3>
-
-        <ul className="text-left p-3">
+    <> 
+      <h3 className="text-xl text-[#dee4ea] font-bold text-left pl-8">Nueva sesión</h3>
+      <div className="grid grid-cols-3 ">
+        <div
+          className="
+            p-4
+            flex flex-col
+            border-r border-r-[#454f59]
+          "
+        >
           {
-            //  map the graph of the selected type of event to show the data points
-            TypesEvents.find((item) => item.name === selected)?.graph.map((item) => {
+            //  map the types of events to create the buttons
+            TypesEvents.map((item) => {
               return (
-                <li key={item} className="text-white text-s">
-                  <span className="mr-2">•</span>
-                  {item}
-                </li>
+                <ButtonEventMenu
+                  key={item.name}
+                  selected={selected}
+                  setSeleted={setSelected}
+                  name={item.name}
+                />
               )
             })
           }
-        </ul>
-      </dir>
+        </div>
 
-      <form onSubmit={handleSelect} className="flex flex-col mt-4 gap-2 text-[#dee4ea]">
-        <label className="flex flex-col gap-2">
-          Nombre de la sesión
-          <input type="text" name="name" className="text-black p-1 rounded" />
-        </label>
-        <button
+        <dir
           className="
-        p-2
-        bg-[#e94926]
-        rounded
-        text-[#dee4ea]
-        hover:bg-[#ec6d2d]
+        p-4
+        flex flex-col
+        relative
 
-        // align right - bottom
-        absolute
-        right-8
-        bottom-8
         "
         >
-          Ok
-        </button>
-      </form>
-    </div>
+          <h3 className="text-xl text-[#dee4ea] font-bold">Data point</h3>
+
+          <ul className="text-left p-3">
+            {
+              //  map the graph of the selected type of event to show the data points
+              TypesEvents.find((item) => item.name === selected)?.graph.map((item) => {
+                return (
+                  <li key={item} className="text-white text-s">
+                    <span className="mr-2">•</span>
+                    {item}
+                  </li>
+                )
+              })
+            }
+          </ul>
+        </dir>
+
+        <form onSubmit={handleSelect} className="flex flex-col mt-4 gap-2 text-[#dee4ea]">
+          <label className="flex flex-col gap-2">
+            Nombre de la sesión
+            <input type="text" name="name" className="text-black p-1 rounded" />
+          </label>
+          <button
+            className="
+          p-2
+          bg-[#e94926]
+          rounded
+          text-[#dee4ea]
+          hover:bg-[#ec6d2d]
+
+          // align right - bottom
+          absolute
+          right-8
+          bottom-8
+          "
+          >
+            Ok
+          </button>
+        </form>
+      </div>
+    </>
+    
   )
 }
 // this is the button to select the type of event
