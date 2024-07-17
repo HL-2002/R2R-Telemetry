@@ -12,18 +12,15 @@ While the data to be inputted needs to be integrated within the system (so it is
 
 Be sure to install the following before execution:
 
-- Python (3.11)
-- Numpy
-- Matplotlib
-- Tkinter
-- SQLite
+- PNPM
+- NPM
 
 ### Running the program
 
 Just make sure to run:
 
 ```
-python main.py
+pnpm install .
+cd app
+npm run dev
 ```
-
-Other files may be executed, although for testing purposes only.
