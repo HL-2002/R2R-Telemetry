@@ -10,7 +10,6 @@
         "**/electron-builder.yml": true,
         "**/electron.vite.config.mjs": true,
         "**/pnpm-lock.yaml": true,
-        "**/postcss.config.js": true,
-        "**/tailwind.config.js": true
+        "**/postcss.config.js": true
     }
 }
