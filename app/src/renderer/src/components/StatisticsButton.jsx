@@ -58,7 +58,7 @@ export default function StatisticsButton({ minRunId }) {
                 break
             case '75m':
                 for (let i = 0; i < entries.length; i++) {
-                    if (entries[i].distance >= 100) {
+                    if (entries[i].distance >= 75) {
                         value = String(Math.round(entries[i].time * 100) / 100) + ' s'
                         break
                     }
@@ -262,7 +262,7 @@ function StatisticsDisplay({ setPage, selection, entries, minRunId, statistics }
             <p key={entrySet.run_id} 
             style={{color : BorderColors[i]}}
             className='font-semibold'> 
-            Intento {entrySet.run_id - minRunId + 1} 
+            Intento {Number(entrySet.run_id) - minRunId + 1} 
             </p>
         )
 
