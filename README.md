@@ -12,7 +12,6 @@ While the data to be inputted needs to be integrated within the system (so it is
 
 Be sure to install the following before execution:
 
-- PNPM
 - NPM
 
 ### Running the program
