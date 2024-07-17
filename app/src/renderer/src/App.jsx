@@ -19,6 +19,7 @@ import ExportButton from './components/ExportButton.jsx'
 import { useSessionStore } from './context/SessionContext'
 import { useSelectionStore } from './context/SelectionContext.js'
 import { DataSelection } from './components/DataSelection.jsx'
+import StatisticsButton from './components/StatisticsButton.jsx'
 
 // Size variables (vh and vw)
 let controlHeight = 10
@@ -441,6 +442,7 @@ function App() {
         <div className="flex">
           <DataSelection mode={mode} />
           <ExportButton />
+          <StatisticsButton minRunId={minRunId}/>
         </div>
       </div>
     )

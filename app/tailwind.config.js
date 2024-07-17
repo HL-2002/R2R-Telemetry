@@ -4,5 +4,10 @@ module.exports = {
   theme: {
     extend: {}
   },
-  plugins: []
+  plugins: [],
+  safelist: [
+    {
+      pattern: /grid-cols-./,
+    },
+  ]
 }

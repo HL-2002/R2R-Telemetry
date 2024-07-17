@@ -31,5 +31,25 @@ export default {
     'fuel',
     'temperature',
     'oil_pressure'
+  ],
+  Stats: [
+    '0-100',
+    '0-200',
+    '75m',
+    'Max Gs',
+    'KM/L'
+  ],
+  Capacity: 30,
+  BorderColors: [
+    'RGBA(236, 109, 45, 1)', 
+    'RGBA(55, 162, 235, 1)', 
+    'RGBA(255, 205, 86, 1)', 
+    'RGBA(255, 75, 110, 1)'
+  ],
+  BackgroundColors: [
+    'RGBA(236, 109, 45, 0.41)', 
+    'RGBA(55, 162, 235, 0.41)',
+    'RGBA(255, 205, 86, 0.41)', 
+    'RGBA(255, 75, 110, 0.41)'
   ]
 }

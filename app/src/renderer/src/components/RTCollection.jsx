@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import { Line } from 'react-chartjs-2'
 import { useSessionStore } from '../context/SessionContext'
+import constants from '../constants.js'
+const { BackgroundColors, BorderColors} = constants
 // TODO: Need to import necessary modules for Chart.js only
 import { Chart } from 'chart.js/auto'
 import annotationPlugin from 'chartjs-plugin-annotation'
@@ -52,10 +54,6 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
 
   // Plot's titles
   let title = ''
-
-  // Plot's colors (based on max amount of selected runs)
-  const borderColors = ['RGBA(236, 109, 45, 1)', 'RGBA(55, 162, 235, 1)', 'RGBA(255, 205, 86, 1)', 'RGBA(255, 75, 110, 1)']
-  const backgroundColors = ['RGBA(236, 109, 45, 0.41)', 'RGBA(55, 162, 235, 0.41)', 'RGBA(255, 205, 86, 0.41)', 'RGBA(255, 75, 110, 0.41)']
   
   // Run legend
   const legend = {
@@ -284,8 +282,8 @@ function RTCollection({ data, type, axis, height, frequency, notSafety, selectio
   // Format each plot's line style
   configList.forEach((config) => {
     config.data.datasets.forEach((dataset, i) => {
-      dataset.borderColor = borderColors[i]
-      dataset.backgroundColor = backgroundColors[i]
+      dataset.borderColor = BorderColors[i]
+      dataset.backgroundColor = BackgroundColors[i]
       dataset.borderWidth = 1.5
       dataset.pointRadius = 0
     })
