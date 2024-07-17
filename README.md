@@ -17,10 +17,10 @@ Be sure to install the following before execution:
 
 ### Running the program
 
-Just make sure to run:
+After cloning the repo, just make sure to run:
 
 ```
-pnpm install .
 cd app
+npm install .
 npm run dev
 ```
